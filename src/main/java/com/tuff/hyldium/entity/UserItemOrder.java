@@ -1,4 +1,4 @@
-package com.tuff.hyldium.entity;
+ackage com.tuff.hyldium.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
