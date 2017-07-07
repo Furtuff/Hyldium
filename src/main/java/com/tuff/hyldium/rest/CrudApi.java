@@ -3,6 +3,7 @@ package com.tuff.hyldium.rest;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -31,5 +32,11 @@ public class CrudApi{
 	public Response copyItemsFromFile() {
 		
 		return Response.ok(Dao.copyItems()).header("X-FM-RC", "0").build();
+	}
+	@GET
+	@Path("/products")
+	public Response getItemsList() {
+		
+		return Response.ok(Dao.getItemsList()).build();
 	}
 }

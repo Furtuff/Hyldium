@@ -26,7 +26,7 @@ import com.tuff.hyldium.model.Emf;
 
 public class Dao {
 	
-	public static boolean copyItems() {
+	public static List<Item> copyItems() {
 		
 		File file = new File("/home/tuffery/firstdb.ods");
 		Sheet sheet = null;
@@ -37,10 +37,10 @@ public class Dao {
 		}
 		List<Item> prout = saveItemListFromSheet(sheet);
 		if(prout==null) {
-			 return false;
+			 return null;
 
 		}else {
-			return true;
+			return prout;
 		}
 
 		
@@ -93,6 +93,14 @@ public class Dao {
 		}
 		
 		return list;
+	}
+	
+	public static List<Item> getItemsList(){
+		EntityManager em = Emf.instance.getEntityManager();
+		
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id < 10", Item.class);
+		return query.getResultList();
+
 	}
 	
 	public static List<Item> addItems(List<Item> items){
