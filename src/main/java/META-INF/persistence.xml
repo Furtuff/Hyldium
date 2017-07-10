@@ -4,7 +4,9 @@
 		<provider>com.objectdb.jpa.Provider</provider>
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="/home/tuffery/eclipse-workspace/db/hyldium.odb" />
-
+			<!-- /home/tuffery/eclipse-workspace/db/hyldium.odb
+			/db/hyldium.odb
+			 -->
 		</properties>
 	</persistence-unit>
 </persistence>

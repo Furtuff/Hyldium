@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,15 +29,23 @@ public class CrudApi{
 		return Response.ok(Dao.addItems(items)).build();
 	}
 	@POST
+	@Path("/update")
+	public Response updateItem(Item item) {
+		
+		
+		return null;
+	}
+	@POST
 	@Path("/copy")
 	public Response copyItemsFromFile() {
 		
 		return Response.ok(Dao.copyItems()).header("X-FM-RC", "0").build();
 	}
 	@GET
-	@Path("/products")
-	public Response getItemsList() {
+	@Path("/products/{itemid}")
+	public Response getItemsList(@PathParam("itemid") long itemId) {
 		
-		return Response.ok(Dao.getItemsList()).build();
+		return Response.ok(Dao.getItemsList(itemId)).build();
 	}
+	
 }

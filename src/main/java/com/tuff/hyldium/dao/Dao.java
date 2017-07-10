@@ -3,10 +3,16 @@ package com.tuff.hyldium.dao;
 import static com.tuff.hyldium.dao.DaoErrors.USER_UNKNOWN;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
+import java.util.logging.FileHandler;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,18 +23,32 @@ import org.jopendocument.dom.spreadsheet.MutableCell;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.jopendocument.dom.spreadsheet.Table;
+import org.jopendocument.util.FileUtils;
 
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.tuff.hyldium.entity.Item;
 import com.tuff.hyldium.entity.QuizItem;
 import com.tuff.hyldium.entity.QuizItemData;
 import com.tuff.hyldium.entity.User;
 import com.tuff.hyldium.model.Emf;
+import com.tuff.hyldium.utils.StreamUtil;
 
 public class Dao {
+	private static  EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
+	private static EntityManager getEntityManager() {
+		return emf.createEntityManager();
+	}
 	
 	public static List<Item> copyItems() {
 		
-		File file = new File("/home/tuffery/firstdb.ods");
+		File file = null;
+		try {
+			file = StreamUtil.stream2file(Dao.class.getResourceAsStream("firstdb.ods"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		Sheet sheet = null;
 		try {
 			sheet = SpreadSheet.createFromFile(file).getSheet(0);
@@ -47,7 +67,7 @@ public class Dao {
 	}
 	private static List<Item> saveItemListFromSheet(Sheet sheet){
 		
-		EntityManager em = Emf.instance.getEntityManager();
+		EntityManager em = getEntityManager();
 
 		boolean hasNext = true;
 		List<Item> list = new ArrayList<Item>();
@@ -95,16 +115,18 @@ public class Dao {
 		return list;
 	}
 	
-	public static List<Item> getItemsList(){
-		EntityManager em = Emf.instance.getEntityManager();
+	public static List<Item> getItemsList(long id){
+		EntityManager em = getEntityManager();
 		
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id < 10", Item.class);
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id > :idmin AND d.id < :idmax", Item.class);
+		query.setParameter("idmin", id);
+		query.setParameter("idmax", id + 20);
 		return query.getResultList();
 
 	}
 	
 	public static List<Item> addItems(List<Item> items){
-		EntityManager em = Emf.instance.getEntityManager();
+		EntityManager em = getEntityManager();
 
 		if(items != null) {
 			em.getTransaction().begin();
@@ -119,6 +141,10 @@ public class Dao {
 		return query.getResultList();
 	}
 	
+	public static Long updateItem(Item item) {
+		//TODO to do
+		return null;
+	}
 	
 	
 }

@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 public class Item {
-	@XmlTransient @Id @GeneratedValue public long id;
+	@Id @GeneratedValue public long id;
 	
 	public String reference;
 	public String name;
