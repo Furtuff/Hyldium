@@ -15,6 +15,7 @@ public class UserItemDelivery {
 	@ManyToOne
 	public User user;
 	
+	public long date;
 	public float bundlePart;
 
 }

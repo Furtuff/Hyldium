@@ -12,6 +12,8 @@ public class Delivery {
 	@XmlTransient @GeneratedValue @Id
 	public long id;
 	
+	public long date;
+	
 	@ManyToOne
 	public Order order;
 	

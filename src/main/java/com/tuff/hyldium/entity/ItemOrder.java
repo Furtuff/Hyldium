@@ -14,6 +14,10 @@ public class ItemOrder {
 	@ManyToOne
 	public Order order;
 	
+	@ManyToOne
+	public UserItemOrder userItemOrder;
+	
+	public long date;
 	public Float bundleNumber;
 
 }

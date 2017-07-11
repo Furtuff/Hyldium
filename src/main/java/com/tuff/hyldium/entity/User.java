@@ -3,6 +3,7 @@ package com.tuff.hyldium.entity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
@@ -11,8 +12,15 @@ public class User {
 	public byte[] secret;
 	public byte[] nonce;
 	public Long creationDate;
+	public long date;
 	
 	@XmlTransient @Id @GeneratedValue public Long id;
+	
+	@OneToMany
+	public UserItemOrder userItemOrder;
+	
+	@OneToMany
+	public UserItemDelivery userItemDelivery;
 	
 	public User() {
 	}

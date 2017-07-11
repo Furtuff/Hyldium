@@ -119,32 +119,45 @@ public class Dao {
 		EntityManager em = getEntityManager();
 		
 		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id > :idmin AND d.id < :idmax", Item.class);
-		query.setParameter("idmin", id);
+		query.setParameter("idmin", id -1);
 		query.setParameter("idmax", id + 20);
 		return query.getResultList();
 
 	}
 	
-	public static List<Item> addItems(List<Item> items){
+	public static Item addItem(Item item){
 		EntityManager em = getEntityManager();
 
-		if(items != null) {
+		if(item != null) {
+			Item existingItem = em.find(Item.class, item.id);
 			em.getTransaction().begin();
-			for(Item i : items) {
-				em.persist(i);
+			if(existingItem == null) {
+				em.persist(item);
+			}else {
+				existingItem.copyFrom(item);
+				em.persist(existingItem);
 			}
 			em.getTransaction().commit();
 		}
-		TypedQuery<Item> query = em.createQuery("SELECT i From Item i",Item.class);
 		
-		
-		return query.getResultList();
+		return item;
 	}
-	
-	public static Long updateItem(Item item) {
-		//TODO to do
+
+	public static Object addUser(User user) {
+		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public static Object getOrder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static Object getUserList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 	
 }

@@ -5,12 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 public class Item {
 	@Id @GeneratedValue public long id;
-	
+	public long date;
 	public String reference;
 	public String name;
 	public double price;
@@ -26,5 +25,16 @@ public class Item {
 	
 	@OneToMany
 	public ItemDelivery itemDelivery;
-
+	
+	public void copyFrom(Item another) {
+		this.reference = another.reference;
+		this.name = another.name;
+		this.price = another.price;
+		this.priceHT = another.priceHT;
+		this.byBundle = another.byBundle;
+		this.TVA = another.TVA;
+		this.label = another.label;
+		this.photo = another.photo;
+		this.barcode = another.barcode;		
+	}
 }

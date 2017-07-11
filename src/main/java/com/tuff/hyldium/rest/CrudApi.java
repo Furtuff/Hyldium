@@ -1,7 +1,5 @@
 package com.tuff.hyldium.rest;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,32 +12,54 @@ import javax.ws.rs.core.Response;
 
 import com.tuff.hyldium.dao.Dao;
 import com.tuff.hyldium.entity.Item;
+import com.tuff.hyldium.entity.User;
 
 @Path("/crud")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class CrudApi{
+	private static final long REQUEST_ERROR = -1;
 	
 	
 	@POST
-	@Path("/add")
-	public Response addItems(List<Item> items) {
-		
-		
-		return Response.ok(Dao.addItems(items)).build();
+	@Path("/product/update")
+	public Response addItems(Item item) {
+		if (item == null) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}
+		return Response.ok(Dao.addItem(item)).header("X-HM-RC", "OK").build();
 	}
 	@POST
-	@Path("/update")
-	public Response updateItem(Item item) {
-		
-		
-		return null;
+	@Path("/user/add")
+	public Response addUser(User user) {
+		if (user == null) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}
+		return Response.ok(Dao.addUser(user)).header("X-HM-RC", "OK").build();
 	}
 	@POST
 	@Path("/copy")
 	public Response copyItemsFromFile() {
 		
-		return Response.ok(Dao.copyItems()).header("X-FM-RC", "0").build();
+		return Response.ok(Dao.copyItems()).header("X-HM-RC", "OK").build();
+	}
+	@GET
+	@Path("/orders/")
+	public Response getOrder() {
+		
+		return Response.ok(Dao.getOrder()).build();
+	}
+	@GET
+	@Path("/delivery/")
+	public Response getDeliveries() {
+		
+		return Response.ok(Dao.getOrder()).build();
+	}
+	@GET
+	@Path("/users/")
+	public Response getUserList(User user) {
+		//if(user == superuser)
+		return Response.ok(Dao.getUserList()).build();
 	}
 	@GET
 	@Path("/products/{itemid}")

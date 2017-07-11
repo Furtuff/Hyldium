@@ -13,7 +13,7 @@ public class ItemDelivery {
 	@Id
 	@ManyToOne
 	public Delivery delivery;
-	
+	public long date;
 	public float bundleNumber;
 	public float bundlePart;
 }

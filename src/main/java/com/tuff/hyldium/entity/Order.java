@@ -9,8 +9,9 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Order {
 
 	@XmlTransient @GeneratedValue @Id public long id;
-	public String date;
+	public String dateName;
 	public String name;
+	public long date;
 	public boolean isValidated = false; 
 	
 }
