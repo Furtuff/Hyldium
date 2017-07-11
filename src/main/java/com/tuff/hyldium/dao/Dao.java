@@ -26,7 +26,9 @@ import org.jopendocument.dom.spreadsheet.Table;
 import org.jopendocument.util.FileUtils;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+import com.tuff.hyldium.entity.Delivery;
 import com.tuff.hyldium.entity.Item;
+import com.tuff.hyldium.entity.Order;
 import com.tuff.hyldium.entity.QuizItem;
 import com.tuff.hyldium.entity.QuizItemData;
 import com.tuff.hyldium.entity.User;
@@ -87,6 +89,7 @@ public class Dao {
 				item.priceHT = Double.parseDouble(sheet.getCellAt("G"+lineString).getTextValue().replace(",", "."));
 				item.byBundle = ((BigDecimal) sheet.getCellAt("E"+lineString).getValue()).floatValue();
 				item.TVA = ((BigDecimal) sheet.getCellAt("F"+lineString).getValue()).floatValue();
+				item.date = Calendar.getInstance().getTimeInMillis();
 			}catch (NumberFormatException e) {
 				}
 			
@@ -143,17 +146,37 @@ public class Dao {
 		return item;
 	}
 
-	public static Object addUser(User user) {
-		// TODO Auto-generated method stub
-		return null;
+	public static long addUser(User user) {
+		EntityManager em = getEntityManager();
+		em.getTransaction().begin();
+		em.persist(user);
+		em.getTransaction().commit();
+		return user.id;
 	}
 
-	public static Object getOrder() {
-		// TODO Auto-generated method stub
-		return null;
+	public static List<Order> getOrder() {
+		EntityManager em = getEntityManager();
+		TypedQuery<Order> query = em.createQuery("SELECT o FROM Order",Order.class);
+		
+		return query.getResultList();
 	}
 
 	public static Object getUserList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static Object createOrder(Order order) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static Object createDelivery(Delivery delivery) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static Object getDeliveries() {
 		// TODO Auto-generated method stub
 		return null;
 	}
