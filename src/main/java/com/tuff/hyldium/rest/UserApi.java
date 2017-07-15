@@ -20,23 +20,16 @@ import com.tuff.hyldium.entity.User;
 public class UserApi extends Api{
 	
 	@POST
-	@Path("/user/add")
+	@Path("/add")
 	public Response addUser(User user) {
 		if (user == null) {
 			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
 		}
 		return Response.ok(Dao.addUser(user)).header("X-HM-RC", "OK").build();
 	}
-	@POST
-	@Path("/copy")
-	public Response copyItemsFromFile() {
-		
-		return Response.ok(Dao.copyItems()).header("X-HM-RC", "OK").build();
-	}
-	
-		
+			
 	@GET
-	@Path("/users/")
+	@Path("/list/")
 	public Response getUserList(User user) {
 		return Response.ok(Dao.getUserList()).build();
 	}

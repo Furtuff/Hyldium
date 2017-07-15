@@ -32,11 +32,13 @@ import com.tuff.hyldium.entity.Order;
 import com.tuff.hyldium.entity.QuizItem;
 import com.tuff.hyldium.entity.QuizItemData;
 import com.tuff.hyldium.entity.User;
+import com.tuff.hyldium.entity.UserItemOrder;
 import com.tuff.hyldium.model.Emf;
 import com.tuff.hyldium.utils.StreamUtil;
 
 public class Dao {
 	private static  EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
+	private final static long MAX_NUMBER = 20;
 	private static EntityManager getEntityManager() {
 		return emf.createEntityManager();
 	}
@@ -121,9 +123,9 @@ public class Dao {
 	public static List<Item> getItemsList(long id){
 		EntityManager em = getEntityManager();
 		
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id > :idmin AND d.id < :idmax", Item.class);
-		query.setParameter("idmin", id -1);
-		query.setParameter("idmax", id + 20);
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id >= :idmin AND d.id < :idmax", Item.class);
+		query.setParameter("idmin", id);
+		query.setParameter("idmax", id + MAX_NUMBER);
 		return query.getResultList();
 
 	}
@@ -154,29 +156,68 @@ public class Dao {
 		return user.id;
 	}
 
-	public static List<Order> getOrder() {
+	public static List<Order> getOrder(long orderId) {
 		EntityManager em = getEntityManager();
-		TypedQuery<Order> query = em.createQuery("SELECT o FROM Order",Order.class);
+		TypedQuery<Order> query = null;
+		if(orderId == 0) {
+			query = em.createQuery("SELECT o FROM Order",Order.class);
+		}else {
+			query = em.createQuery("SELECT o FROM Order WHERE o.id =:oderId",Order.class);
+			query.setParameter("orderId", orderId);
+		}
 		
 		return query.getResultList();
 	}
 
-	public static Object getUserList() {
-		// TODO Auto-generated method stub
-		return null;
+	public static List<User> getUserList() {
+		EntityManager em = getEntityManager();
+		
+		TypedQuery<User> query = em.createQuery("SELECT u FROM User d", User.class);
+		
+		return query.getResultList();
 	}
 
-	public static Object createOrder(Order order) {
-		// TODO Auto-generated method stub
-		return null;
+	public static long createOrder(Order order) {
+		EntityManager em = getEntityManager();
+		
+		em.getTransaction().begin();
+		em.persist(order);
+		em.getTransaction().commit();
+		return order.id;
 	}
 
-	public static Object createDelivery(Delivery delivery) {
-		// TODO Auto-generated method stub
-		return null;
+	public static long createDelivery(Delivery delivery) {
+		EntityManager em = getEntityManager();
+		
+		em.getTransaction().begin();
+		em.persist(delivery);
+		em.getTransaction().commit();
+		return delivery.id;
 	}
 
-	public static Object getDeliveries() {
+	public static List<Delivery> getDeliveries(long deliveryId) {
+		EntityManager em = getEntityManager();
+		TypedQuery<Delivery> query = null;
+		if(deliveryId == 0) {
+			query = em.createQuery("SELECT o FROM Delivery",Delivery.class);
+		}else {
+			query = em.createQuery("SELECT o FROM Delivery WHERE o.id =:deliveryId",Delivery.class);
+			query.setParameter("deliveryId", deliveryId);
+		}
+		
+		return query.getResultList();
+	}
+
+	public static boolean orderItem(UserItemOrder userItemOrder) {
+		EntityManager em = getEntityManager();
+		TypedQuery<UserItemOrder> query = query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.itemOrder.id =:deliveryId",UserItemOrder.class);
+		em.getTransaction().begin();
+		em.persist(userItemOrder);
+		em.getTransaction().commit();
+		return true;
+	}
+
+	public static Object copyFromOrder(Order order) {
 		// TODO Auto-generated method stub
 		return null;
 	}
