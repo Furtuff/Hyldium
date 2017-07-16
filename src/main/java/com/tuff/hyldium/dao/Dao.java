@@ -21,6 +21,7 @@ import com.tuff.hyldium.entity.Order;
 import com.tuff.hyldium.entity.User;
 import com.tuff.hyldium.entity.UserItemDelivery;
 import com.tuff.hyldium.entity.UserItemOrder;
+import com.tuff.hyldium.model.BetterList;
 import com.tuff.hyldium.model.DeliveryModel;
 import com.tuff.hyldium.model.OrderModel;
 import com.tuff.hyldium.model.UserItemDeliveryId;
@@ -216,17 +217,20 @@ public class Dao {
 		if (userItemOrderModel.bundlePart != 0.0) {
 			if (userItemOrder == null) {
 				userItemOrder = new UserItemOrder(user, order, item, userItemOrderModel);
+				em.getTransaction().begin();
+				em.persist(userItemOrder);
+				em.getTransaction().commit();
+			}else {
+				em.getTransaction().begin();
+				userItemOrder.bundlePart = userItemOrderModel.bundlePart;
+				em.getTransaction().commit();
 			}
-
-			em.getTransaction().begin();
-			em.persist(userItemOrder);
-			em.getTransaction().commit();
+			
 			return true;
 
 		} else {
 			if (userItemOrder != null) {
 				em.getTransaction().begin();
-				;
 				em.remove(userItemOrder);
 				em.getTransaction().commit();
 			}
@@ -234,19 +238,53 @@ public class Dao {
 		}
 	}
 
-	public static Object copyFromOrder(Order order) {
-		// TODO Auto-generated method stub
-		return null;
+
+	public static boolean updateOrder(long orderId, OrderModel orderModel) {
+		EntityManager em = getEntityManager();
+		Order order;
+		order= em.getReference(Order.class, orderId);
+
+		if (order == null) {
+			return false;
+		} else if (orderModel.name == null) {
+			TypedQuery<UserItemOrder> query = null;
+			query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.order.id =:orderId ", UserItemOrder.class);
+			query.setParameter("orderId", orderId);
+			List<UserItemOrder> itemOrders = query.getResultList();
+			em.getTransaction().begin();
+			for (int i = 0; i < itemOrders.size(); i++) {
+				em.remove(itemOrders.get(i));
+			}
+			
+			em.remove(order);
+			em.getTransaction().commit();
+			return false;
+		} else {
+			em.getTransaction().begin();
+			order.name = orderModel.name;
+			order.dateName = orderModel.dateName;
+			order.isValidated = orderModel.isValidated;
+			em.getTransaction().commit();
+
+			return true;
+		}
 	}
 
-	public static Object updateOrder(long orderId, OrderModel orderModel) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static boolean copyFromOrder(long deliveryId) {
-		// TODO Auto-generated method stub
-		return true;
+	public static List<UserItemDelivery> copyFromOrder(long deliveryId) {
+		EntityManager em = getEntityManager();
+		Delivery delivery = em.getReference(Delivery.class, deliveryId);
+		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.order.id=:orderId", UserItemOrder.class);
+		query.setParameter("orderId", delivery.order.id);
+		List<UserItemOrder> itemOrders = query.getResultList();
+		em.getTransaction().begin();
+		List<UserItemDelivery> deliveries = new ArrayList<>();
+		for (int i = 0; i < itemOrders.size(); i++) {
+			UserItemDelivery userItemDelivery = new UserItemDelivery(delivery, itemOrders.get(i).user, itemOrders.get(i).item, itemOrders.get(i).bundlePart);
+			deliveries.add(userItemDelivery);
+			em.persist(userItemDelivery);
+		}
+		em.getTransaction().commit();
+		return deliveries;
 	}
 
 	public static boolean updateDelivery(long deliveryId, DeliveryModel deliveryModel) {
@@ -269,12 +307,12 @@ public class Dao {
 			em.getTransaction().commit();
 			return false;
 		} else {
-			delivery.name = deliveryModel.name;
+			
 			Order order = em.getReference(Order.class, deliveryModel.orderId);
-			delivery.order = order;
-
+			
 			em.getTransaction().begin();
-			em.persist(delivery);
+			delivery.name = deliveryModel.name;
+			delivery.order = order;
 			em.getTransaction().commit();
 
 			return true;
@@ -291,11 +329,15 @@ public class Dao {
 		if (userItemDeliveryModel.bundlePart != 0.0) {
 			if (userItemDelivery == null) {
 				userItemDelivery = new UserItemDelivery( delivery,user, item, userItemDeliveryModel.bundlePart);
+				em.getTransaction().begin();
+				em.persist(userItemDelivery);
+				em.getTransaction().commit();
+			}else {
+				em.getTransaction().begin();
+				userItemDelivery.bundlePart = userItemDeliveryModel.bundlePart;
+				em.getTransaction().commit();
 			}
 
-			em.getTransaction().begin();
-			em.persist(userItemDelivery);
-			em.getTransaction().commit();
 			return true;
 
 		} else {
@@ -306,6 +348,19 @@ public class Dao {
 			}
 			return false;
 		}		
+	}
+
+	public static BetterList<UserItemOrder> getOrderItems(long orderId, long from) {
+		EntityManager em = getEntityManager();
+		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio From UserItemOrder WHERE uio.order.id = :orderID LIMIT :maxNumber ORDER BY uio.item.id OFFSET :from ROWS", UserItemOrder.class)
+		query.setParameter("orderId", orderId);
+		query.setParameter("maxNumber", MAX_NUMBER);
+		query.setParameter("from", from);
+		TypedQuery<UserItemOrder> queryCount = em.createQuery("SELECT uio From UserItemOrder WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class);
+		BetterList<UserItemOrder> itemOrders = new BetterList<>();
+		itemOrders.elementList = query.getResultList();
+		itemOrders.elementCount = queryCount.getResultList().size();
+		return itemOrders;
 	}
 
 }

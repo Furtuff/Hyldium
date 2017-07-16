@@ -27,6 +27,15 @@ public class UserApi extends Api{
 		}
 		return Response.ok(Dao.addUser(user)).header("X-HM-RC", "OK").build();
 	}
+	
+	@POST
+	@Path("/update")
+	public Response updateUser(User user) {
+		if (user == null) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}
+		return Response.ok(Dao.addUser(user)).header("X-HM-RC", "OK").build();
+	}
 			
 	@GET
 	@Path("/list/")
