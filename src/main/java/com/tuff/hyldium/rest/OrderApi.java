@@ -4,6 +4,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -12,6 +13,9 @@ import com.tuff.hyldium.dao.Dao;
 import com.tuff.hyldium.entity.Delivery;
 import com.tuff.hyldium.entity.Order;
 import com.tuff.hyldium.entity.UserItemOrder;
+import com.tuff.hyldium.model.DeliveryModel;
+import com.tuff.hyldium.model.OrderModel;
+import com.tuff.hyldium.model.UserItemOrderModel;
 
 @Path("/order")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -20,46 +24,53 @@ public class OrderApi extends Api{
 	
 	@POST
 	@Path("/add")
-	public Response createOrder(Order order) {
-		if(order.id !=0) {
-			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
-		}
-		return Response.ok(Dao.createOrder(order)).build();
+	public Response createOrder(OrderModel orderModel) {
+		return Response.ok(Dao.createOrder(orderModel)).build();
+	}
+	@POST
+	@Path("/update/{orderId}")
+	public Response updateOrder(OrderModel orderModel,@PathParam("orderId") long orderId) {
+		
+		return Response.ok(Dao.updateOrder(orderId,orderModel)).build();
 	}
 	
 	@POST
 	@Path("/item/update")
-	public Response orderItem(UserItemOrder userItemOrder) {
+	public Response orderItem(UserItemOrderModel userItemOrderModel) {
 		
-		return Response.ok(Dao.orderItem(userItemOrder)).build();
+		return Response.ok(Dao.orderItem(userItemOrderModel)).build();
 	}
 	
 	@POST
 	@Path("/delivery/add")
-	public Response createDelivery(Delivery delivery) {
-		if(delivery.id !=0) {
-			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
-		}
-		return Response.ok(Dao.createDelivery(delivery)).build();
+	public Response createDelivery(DeliveryModel deliveryModel) {
+
+		return Response.ok(Dao.createDelivery(deliveryModel)).build();
 	}
 	@POST
-	@Path("/delivery/copy")
-	public Response copyDeliveryOrder(Order order) {
+	@Path("/delivery/update/{deliveryId")
+	public Response updateDelivery(DeliveryModel deliveryModel,@PathParam("deliveryId")long deliveryId) {
+
+		return Response.ok(Dao.updateDelivery(deliveryId,deliveryModel)).build();
+	}
+	@POST
+	@Path("/delivery/copy/{orderId}")
+	public Response copyDeliveryOrder(@PathParam("orderId")long orderId) {
 		
-		return Response.ok(Dao.copyFromOrder(order)).build();
+		return Response.ok(Dao.copyFromOrder(orderId)).build();
 	}
 	
 	
 	@GET
-	@Path("")
-	public Response getOrder(long orderId) {
+	@Path("{orderId}")
+	public Response getOrder(@PathParam("orderId")long orderId) {
 		
 		return Response.ok(Dao.getOrder(orderId)).build();
 	}
 	@GET
-	@Path("/delivery/")
-	public Response getDeliveries() {
+	@Path("/delivery/{deliveryId}")
+	public Response getDeliveries(@PathParam("deliveryId")long deliveryId) {
 		
-		return Response.ok(Dao.getDeliveries()).build();
+		return Response.ok(Dao.getDeliveries(deliveryId)).build();
 	}
 }

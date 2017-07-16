@@ -28,12 +28,16 @@ import org.jopendocument.util.FileUtils;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.tuff.hyldium.entity.Delivery;
 import com.tuff.hyldium.entity.Item;
+import com.tuff.hyldium.entity.ItemOrder;
 import com.tuff.hyldium.entity.Order;
 import com.tuff.hyldium.entity.QuizItem;
 import com.tuff.hyldium.entity.QuizItemData;
 import com.tuff.hyldium.entity.User;
 import com.tuff.hyldium.entity.UserItemOrder;
 import com.tuff.hyldium.model.Emf;
+import com.tuff.hyldium.model.OrderModel;
+import com.tuff.hyldium.model.UserItemOrderId;
+import com.tuff.hyldium.model.UserItemOrderModel;
 import com.tuff.hyldium.utils.StreamUtil;
 
 public class Dao {
@@ -177,9 +181,10 @@ public class Dao {
 		return query.getResultList();
 	}
 
-	public static long createOrder(Order order) {
+	public static long createOrder(OrderModel orderModel) {
 		EntityManager em = getEntityManager();
-		
+		Order order = new Order();
+		order.copyFromOrderModel(orderModel);
 		em.getTransaction().begin();
 		em.persist(order);
 		em.getTransaction().commit();
@@ -208,16 +213,31 @@ public class Dao {
 		return query.getResultList();
 	}
 
-	public static boolean orderItem(UserItemOrder userItemOrder) {
+	public static boolean orderItem(UserItemOrderModel userItemOrderModel) {
 		EntityManager em = getEntityManager();
-		TypedQuery<UserItemOrder> query = query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.itemOrder.id =:deliveryId",UserItemOrder.class);
+		User user = em.getReference(User.class, userItemOrderModel.userId);
+		Item item = em.getReference(Item.class, userItemOrderModel.itemId);
+		Order order = em.getReference(Order.class, userItemOrderModel.orderId);
+		UserItemOrderId userItemOrderId = new UserItemOrderId(order, user, item);
+		UserItemOrder userItemOrder = em.getReference(UserItemOrder.class, userItemOrderId);
+		
+		if(userItemOrder == null) {
+			//Todo create new ref
+			userItemOrder = new UserItemOrder();
+		}
+		
 		em.getTransaction().begin();
-		em.persist(userItemOrder);
+		em.persist(userItemOrderModel);
 		em.getTransaction().commit();
 		return true;
 	}
 
 	public static Object copyFromOrder(Order order) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static Object updateOrder(long orderId, OrderModel orderModel) {
 		// TODO Auto-generated method stub
 		return null;
 	}

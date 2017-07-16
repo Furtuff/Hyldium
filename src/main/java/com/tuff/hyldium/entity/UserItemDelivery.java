@@ -9,7 +9,7 @@ public class UserItemDelivery {
 	
 	@Id
 	@ManyToOne
-	public ItemDelivery itemDelivery;
+	public Delivery Delivery;
 	
 	@Id
 	@ManyToOne
