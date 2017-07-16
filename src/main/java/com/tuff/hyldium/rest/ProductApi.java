@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.tuff.hyldium.dao.Dao;
-import com.tuff.hyldium.entity.Item;
+import com.tuff.hyldium.model.ItemModel;
 
 @Path("/product")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -18,11 +18,11 @@ import com.tuff.hyldium.entity.Item;
 public class ProductApi extends Api {
 	@POST
 	@Path("/products/update")
-	public Response addItems(Item item) {
-		if (item == null) {
+	public Response addItems(ItemModel itemModel) {
+		if (itemModel == null) {
 			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
 		}
-		return Response.ok(Dao.addItem(item)).header("X-HM-RC", "OK").build();
+		return Response.ok(Dao.crudItem(itemModel)).header("X-HM-RC", "OK").build();
 	}
 
 	@GET

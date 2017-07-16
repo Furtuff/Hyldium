@@ -23,11 +23,13 @@ import com.tuff.hyldium.entity.UserItemDelivery;
 import com.tuff.hyldium.entity.UserItemOrder;
 import com.tuff.hyldium.model.BetterList;
 import com.tuff.hyldium.model.DeliveryModel;
+import com.tuff.hyldium.model.ItemModel;
 import com.tuff.hyldium.model.OrderModel;
 import com.tuff.hyldium.model.UserItemDeliveryId;
 import com.tuff.hyldium.model.UserItemDeliveryModel;
 import com.tuff.hyldium.model.UserItemOrderId;
 import com.tuff.hyldium.model.UserItemOrderModel;
+import com.tuff.hyldium.model.UserModel;
 import com.tuff.hyldium.utils.StreamUtil;
 
 public class Dao {
@@ -125,26 +127,39 @@ public class Dao {
 
 	}
 
-	public static Item addItem(Item item) {
+	public static long crudItem(ItemModel itemModel) {
 		EntityManager em = getEntityManager();
 
-		if (item != null) {
-			Item existingItem = em.find(Item.class, item.id);
+		if (itemModel.id == 0) {
+			Item item = new Item(itemModel);
 			em.getTransaction().begin();
-			if (existingItem == null) {
-				em.persist(item);
-			} else {
-				existingItem.copyFrom(item);
-				em.persist(existingItem);
-			}
+			em.persist(item);
 			em.getTransaction().commit();
+			return item.id;
+		} else {
+			Item existingItem = em.find(Item.class, itemModel.id);
+			if (existingItem == null) {
+				return -1;
+			} else if(itemModel.name == null) {
+				em.getTransaction().begin();
+				em.remove(existingItem);
+				em.getTransaction().commit();
+				
+			}else {
+				em.getTransaction().begin();
+				existingItem.copyFrom(itemModel);
+				em.persist(existingItem);
+				return existingItem.id;
+			}
 		}
+		em.getTransaction().commit();
 
 		return item;
 	}
 
-	public static long addUser(User user) {
+	public static long addUser(UserModel userModel) {
 		EntityManager em = getEntityManager();
+		User user = new User(userModel.name, userModel.password, userModel.photo);
 		em.getTransaction().begin();
 		em.persist(user);
 		em.getTransaction().commit();
@@ -220,12 +235,12 @@ public class Dao {
 				em.getTransaction().begin();
 				em.persist(userItemOrder);
 				em.getTransaction().commit();
-			}else {
+			} else {
 				em.getTransaction().begin();
 				userItemOrder.bundlePart = userItemOrderModel.bundlePart;
 				em.getTransaction().commit();
 			}
-			
+
 			return true;
 
 		} else {
@@ -238,11 +253,10 @@ public class Dao {
 		}
 	}
 
-
 	public static boolean updateOrder(long orderId, OrderModel orderModel) {
 		EntityManager em = getEntityManager();
 		Order order;
-		order= em.getReference(Order.class, orderId);
+		order = em.getReference(Order.class, orderId);
 
 		if (order == null) {
 			return false;
@@ -255,7 +269,7 @@ public class Dao {
 			for (int i = 0; i < itemOrders.size(); i++) {
 				em.remove(itemOrders.get(i));
 			}
-			
+
 			em.remove(order);
 			em.getTransaction().commit();
 			return false;
@@ -273,13 +287,15 @@ public class Dao {
 	public static List<UserItemDelivery> copyFromOrder(long deliveryId) {
 		EntityManager em = getEntityManager();
 		Delivery delivery = em.getReference(Delivery.class, deliveryId);
-		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.order.id=:orderId", UserItemOrder.class);
+		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.order.id=:orderId",
+				UserItemOrder.class);
 		query.setParameter("orderId", delivery.order.id);
 		List<UserItemOrder> itemOrders = query.getResultList();
 		em.getTransaction().begin();
 		List<UserItemDelivery> deliveries = new ArrayList<>();
 		for (int i = 0; i < itemOrders.size(); i++) {
-			UserItemDelivery userItemDelivery = new UserItemDelivery(delivery, itemOrders.get(i).user, itemOrders.get(i).item, itemOrders.get(i).bundlePart);
+			UserItemDelivery userItemDelivery = new UserItemDelivery(delivery, itemOrders.get(i).user,
+					itemOrders.get(i).item, itemOrders.get(i).bundlePart);
 			deliveries.add(userItemDelivery);
 			em.persist(userItemDelivery);
 		}
@@ -295,21 +311,22 @@ public class Dao {
 			return false;
 		} else if (deliveryModel.name == null) {
 			TypedQuery<UserItemDelivery> query = null;
-			query = em.createQuery("SELECT uid FROM UserItemDelivery WHERE uid.delivery.id =:deliveryId ", UserItemDelivery.class);
+			query = em.createQuery("SELECT uid FROM UserItemDelivery WHERE uid.delivery.id =:deliveryId ",
+					UserItemDelivery.class);
 			query.setParameter("deliveryId", deliveryId);
 			List<UserItemDelivery> userItemDeliveries = query.getResultList();
 			em.getTransaction().begin();
 			for (int i = 0; i < userItemDeliveries.size(); i++) {
 				em.remove(userItemDeliveries.get(i));
 			}
-			
+
 			em.remove(delivery);
 			em.getTransaction().commit();
 			return false;
 		} else {
-			
+
 			Order order = em.getReference(Order.class, deliveryModel.orderId);
-			
+
 			em.getTransaction().begin();
 			delivery.name = deliveryModel.name;
 			delivery.order = order;
@@ -328,11 +345,11 @@ public class Dao {
 		UserItemDelivery userItemDelivery = em.getReference(UserItemDelivery.class, userItemDeliveryId);
 		if (userItemDeliveryModel.bundlePart != 0.0) {
 			if (userItemDelivery == null) {
-				userItemDelivery = new UserItemDelivery( delivery,user, item, userItemDeliveryModel.bundlePart);
+				userItemDelivery = new UserItemDelivery(delivery, user, item, userItemDeliveryModel.bundlePart);
 				em.getTransaction().begin();
 				em.persist(userItemDelivery);
 				em.getTransaction().commit();
-			}else {
+			} else {
 				em.getTransaction().begin();
 				userItemDelivery.bundlePart = userItemDeliveryModel.bundlePart;
 				em.getTransaction().commit();
@@ -347,7 +364,7 @@ public class Dao {
 				em.getTransaction().commit();
 			}
 			return false;
-		}		
+		}
 	}
 
 	public static BetterList<UserItemOrder> getOrderItems(long orderId, long from) {
@@ -361,6 +378,27 @@ public class Dao {
 		itemOrders.elementList = query.getResultList();
 		itemOrders.elementCount = queryCount.getResultList().size();
 		return itemOrders;
+	}
+
+	public static boolean updateUser(UserModel userModel) {
+		EntityManager em = getEntityManager();
+		User user = em.getReference(User.class, userModel.id);
+		if (user == null) {
+			return false;
+		} else if (userModel.name == null) {
+			em.getTransaction().begin();
+			em.remove(user);
+			em.getTransaction().commit();
+			return false;
+		} else {
+			em.getTransaction().begin();
+			user.name = userModel.name;
+			user.secret = userModel.password;
+			em.getTransaction().commit();
+
+			return true;
+		}
+
 	}
 
 }

@@ -1,11 +1,15 @@
 package com.tuff.hyldium.entity;
 
 
+import java.util.Calendar;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.tuff.hyldium.model.ItemModel;
 
 @Entity
 public class Item {
@@ -19,7 +23,7 @@ public class Item {
 	public float TVA;
 	public String label;
 	public Byte[] photo;
-	public String barcode;
+	public String barCode;
 	
 	@OneToMany(cascade=CascadeType.REFRESH)
 	public ItemOrder itemOrder;
@@ -27,7 +31,8 @@ public class Item {
 	@OneToMany(cascade=CascadeType.REFRESH)
 	public ItemDelivery itemDelivery;
 	
-	public void copyFrom(Item another) {
+	public Item(ItemModel another) {
+		this.date = Calendar.getInstance().getTimeInMillis();
 		this.reference = another.reference;
 		this.name = another.name;
 		this.price = another.price;
@@ -36,6 +41,17 @@ public class Item {
 		this.TVA = another.TVA;
 		this.label = another.label;
 		this.photo = another.photo;
-		this.barcode = another.barcode;		
+		this.barCode = another.barCode;		
+	}
+	public void copyFrom(ItemModel another) {
+		this.reference = another.reference;
+		this.name = another.name;
+		this.price = another.price;
+		this.priceHT = another.priceHT;
+		this.byBundle = another.byBundle;
+		this.TVA = another.TVA;
+		this.label = another.label;
+		this.photo = another.photo;
+		this.barCode = another.barCode;		
 	}
 }

@@ -1,5 +1,7 @@
 package com.tuff.hyldium.entity;
 
+import java.util.Calendar;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,9 +12,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 public class User {
 	public String name;
+	public byte[] photo;
 	public byte[] secret;
 	public byte[] nonce;
-	public Long creationDate;
 	public long date;
 	
 	@XmlTransient @Id @GeneratedValue public Long id;
@@ -26,9 +28,11 @@ public class User {
 	public User() {
 	}
 	
-	public User(String name) {
+	public User(String name, byte[] secret, byte[] photo) {
 		this.name = name;
-		this.secret = new byte[32];
+		this.secret = secret;
+		this.photo = photo;
+		this.date = Calendar.getInstance().getTimeInMillis();
 	}
 	
 	@Override
