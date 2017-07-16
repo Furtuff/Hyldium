@@ -1,6 +1,7 @@
 package com.tuff.hyldium.entity;
 
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,10 +21,10 @@ public class Item {
 	public Byte[] photo;
 	public String barcode;
 	
-	@OneToMany
+	@OneToMany(cascade=CascadeType.REFRESH)
 	public ItemOrder itemOrder;
 	
-	@OneToMany
+	@OneToMany(cascade=CascadeType.REFRESH)
 	public ItemDelivery itemDelivery;
 	
 	public void copyFrom(Item another) {

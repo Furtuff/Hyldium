@@ -12,9 +12,11 @@ import javax.ws.rs.core.Response;
 import com.tuff.hyldium.dao.Dao;
 import com.tuff.hyldium.entity.Delivery;
 import com.tuff.hyldium.entity.Order;
+import com.tuff.hyldium.entity.UserItemDelivery;
 import com.tuff.hyldium.entity.UserItemOrder;
 import com.tuff.hyldium.model.DeliveryModel;
 import com.tuff.hyldium.model.OrderModel;
+import com.tuff.hyldium.model.UserItemDeliveryModel;
 import com.tuff.hyldium.model.UserItemOrderModel;
 
 @Path("/order")
@@ -54,12 +56,17 @@ public class OrderApi extends Api{
 		return Response.ok(Dao.updateDelivery(deliveryId,deliveryModel)).build();
 	}
 	@POST
-	@Path("/delivery/copy/{orderId}")
-	public Response copyDeliveryOrder(@PathParam("orderId")long orderId) {
+	@Path("/delivery/copy/{deliveryId}")
+	public Response copyDeliveryOrder(@PathParam("deliveryId")long deliveryId) {
 		
-		return Response.ok(Dao.copyFromOrder(orderId)).build();
+		return Response.ok(Dao.copyFromOrder(deliveryId)).build();
 	}
-	
+	@POST
+	@Path("delivery/item/update")
+	public Response deliveryItem(UserItemDeliveryModel userItemDeliveryModel) {
+		
+		return Response.ok(Dao.deliveryItem(userItemDeliveryModel)).build();
+	}
 	
 	@GET
 	@Path("{orderId}")

@@ -1,10 +1,12 @@
 package com.tuff.hyldium.model;
 
+import java.io.Serializable;
+
 import com.tuff.hyldium.entity.Item;
 import com.tuff.hyldium.entity.Order;
 import com.tuff.hyldium.entity.User;
 
-public class UserItemOrderId {
+public class UserItemOrderId implements Serializable {
 	
 
 	public Order order;

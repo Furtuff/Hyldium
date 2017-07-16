@@ -1,5 +1,6 @@
 package com.tuff.hyldium.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,10 +17,10 @@ public class User {
 	
 	@XmlTransient @Id @GeneratedValue public Long id;
 	
-	@OneToMany
+	@OneToMany(cascade=CascadeType.REFRESH)
 	public UserItemOrder userItemOrder;
 	
-	@OneToMany
+	@OneToMany(cascade=CascadeType.REFRESH)
 	public UserItemDelivery userItemDelivery;
 	
 	public User() {
