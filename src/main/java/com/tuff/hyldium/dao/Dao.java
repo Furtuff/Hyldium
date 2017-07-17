@@ -10,6 +10,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.jopendocument.dom.spreadsheet.Sheet;
@@ -116,13 +117,13 @@ public class Dao {
 		return list;
 	}
 
-	public static List<Item> getItemsList(long id) {
+	public static List<Item> getItemsList(long offset) {
 		EntityManager em = getEntityManager();
-
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id >= :idmin AND d.id < :idmax",
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.name LIMIT :limit OFFSET :offset ROWS",
 				Item.class);
-		query.setParameter("idmin", id);
-		query.setParameter("idmax", id + MAX_NUMBER);
+		query.setParameter("offset", offset);
+		query.setParameter("limit", MAX_NUMBER);
+		
 		return query.getResultList();
 
 	}

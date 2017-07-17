@@ -3,6 +3,7 @@ package com.tuff.hyldium.entity;
 
 import java.util.Calendar;
 
+import javax.jdo.annotations.Persistent;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ public class Item {
 	@Id @GeneratedValue public long id;
 	public long date;
 	public String reference;
+	@Persistent
 	public String name;
 	public double price;
 	public double priceHT;
@@ -30,7 +32,9 @@ public class Item {
 	
 	@OneToMany(cascade=CascadeType.REFRESH)
 	public ItemDelivery itemDelivery;
-	
+	public Item() {
+		
+	}
 	public Item(ItemModel another) {
 		this.date = Calendar.getInstance().getTimeInMillis();
 		this.reference = another.reference;

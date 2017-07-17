@@ -17,8 +17,8 @@ import com.tuff.hyldium.model.ItemModel;
 @Produces(MediaType.APPLICATION_JSON)
 public class ProductApi extends Api {
 	@POST
-	@Path("/products/update")
-	public Response addItems(ItemModel itemModel) {
+	@Path("/crud")
+	public Response crudItems(ItemModel itemModel) {
 		if (itemModel == null) {
 			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
 		}
@@ -26,9 +26,9 @@ public class ProductApi extends Api {
 	}
 
 	@GET
-	@Path("/products/{itemid}")
-	public Response getItemsList(@PathParam("itemid") long itemId) {
+	@Path("/{offset}")
+	public Response getItemsList(@PathParam("offset") long offset) {
 		
-		return Response.ok(Dao.getItemsList(itemId)).build();
+		return Response.ok(Dao.getItemsList(offset)).build();
 	}
 }
