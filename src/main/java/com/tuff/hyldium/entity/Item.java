@@ -2,6 +2,7 @@ package com.tuff.hyldium.entity;
 
 
 import java.util.Calendar;
+import java.util.Collection;
 
 import javax.jdo.annotations.Persistent;
 import javax.persistence.CascadeType;
@@ -28,10 +29,10 @@ public class Item {
 	public String barCode;
 	
 	@OneToMany(cascade=CascadeType.REFRESH)
-	public ItemOrder itemOrder;
+	public Collection<UserItemOrder> itemOrders;
 	
 	@OneToMany(cascade=CascadeType.REFRESH)
-	public ItemDelivery itemDelivery;
+	public Collection<UserItemDelivery> itemDeliveries;
 	public Item() {
 		
 	}

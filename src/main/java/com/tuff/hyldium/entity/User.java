@@ -1,6 +1,7 @@
 package com.tuff.hyldium.entity;
 
 import java.util.Calendar;
+import java.util.Collection;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -20,10 +21,10 @@ public class User {
 	@XmlTransient @Id @GeneratedValue public Long id;
 	
 	@OneToMany(cascade=CascadeType.REFRESH)
-	public UserItemOrder userItemOrder;
+	public Collection<UserItemOrder> userItemOrders;
 	
 	@OneToMany(cascade=CascadeType.REFRESH)
-	public UserItemDelivery userItemDelivery;
+	public Collection<UserItemDelivery> userItemDeliveries;
 	
 	public User() {
 	}

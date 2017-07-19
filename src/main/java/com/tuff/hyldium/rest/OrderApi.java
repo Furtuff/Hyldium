@@ -60,7 +60,7 @@ public class OrderApi extends Api {
 	}
 
 	@POST
-	@Path("/delivery/update/{deliveryId")
+	@Path("/delivery/update/{deliveryId}")
 	public Response updateDelivery(DeliveryModel deliveryModel, @PathParam("deliveryId") long deliveryId) {
 		if (deliveryId == 0) {
 			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
@@ -105,7 +105,7 @@ public class OrderApi extends Api {
 	}
 	@GET
 	@Path("/{orderId}/{from}")
-	public Response getOrderItems(@PathParam("orderId") long orderId,@PathParam("from") long from) {
+	public Response getOrderItems(@PathParam("orderId") long orderId,@PathParam("from") int from) {
 		
 		return Response.ok(Dao.getOrderItems(orderId,from)).header("X-HM-RC", REQUEST_SUCCESS).build();
 	}

@@ -1,10 +1,12 @@
 package com.tuff.hyldium.entity;
 
 import java.util.Calendar;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.tuff.hyldium.model.OrderModel;
@@ -17,6 +19,10 @@ public class Order {
 	public String name;
 	public long date;
 	public boolean isValidated = false; 
+	@OneToMany
+	public Collection<UserItemOrder> itemOrders;
+	@OneToMany
+	public Collection<Delivery> deliveries;
 	
 	public void copyFromOrderModel(OrderModel orderModel ) {
 		this.dateName = orderModel.dateName;

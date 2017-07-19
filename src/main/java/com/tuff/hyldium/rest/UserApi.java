@@ -44,7 +44,7 @@ public class UserApi extends Api{
 			
 	@GET
 	@Path("/list/")
-	public Response getUserList(User user) {
+	public Response getUserList() {
 		return Response.ok(Dao.getUserList()).build();
 	}
 	

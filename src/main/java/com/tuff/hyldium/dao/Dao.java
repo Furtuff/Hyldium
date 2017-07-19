@@ -22,6 +22,7 @@ import com.tuff.hyldium.entity.Order;
 import com.tuff.hyldium.entity.User;
 import com.tuff.hyldium.entity.UserItemDelivery;
 import com.tuff.hyldium.entity.UserItemOrder;
+import com.tuff.hyldium.lucene.Search;
 import com.tuff.hyldium.model.BetterList;
 import com.tuff.hyldium.model.DeliveryModel;
 import com.tuff.hyldium.model.ItemModel;
@@ -35,7 +36,7 @@ import com.tuff.hyldium.utils.StreamUtil;
 
 public class Dao {
 	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
-	private final static long MAX_NUMBER = 20;
+	private final static int MAX_NUMBER = 20;
 
 	private static EntityManager getEntityManager() {
 		return emf.createEntityManager();
@@ -98,6 +99,7 @@ public class Dao {
 			em.getTransaction().begin();
 			em.persist(item);
 			em.getTransaction().commit();
+			Search.addDoc(item.name, String.valueOf(item.id));
 			String nextString = String.valueOf(line + 1);
 			if (line + 1 < 10) {
 				nextString = "0" + nextString;
@@ -117,15 +119,14 @@ public class Dao {
 		return list;
 	}
 
-	public static List<Item> getItemsList(long offset) {
+	public static List<Item> getItemsList(int offset) {
 		EntityManager em = getEntityManager();
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.name LIMIT :limit OFFSET :offset ROWS",
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.name",
 				Item.class);
-		query.setParameter("offset", offset);
-		query.setParameter("limit", MAX_NUMBER);
+		query.setMaxResults(MAX_NUMBER);
+		query.setFirstResult(offset);
 		
 		return query.getResultList();
-
 	}
 
 	public static long crudItem(ItemModel itemModel) {
@@ -136,26 +137,29 @@ public class Dao {
 			em.getTransaction().begin();
 			em.persist(item);
 			em.getTransaction().commit();
+			Search.addDoc(item.name, String.valueOf(item.id));
 			return item.id;
 		} else {
 			Item existingItem = em.find(Item.class, itemModel.id);
 			if (existingItem == null) {
 				return -1;
 			} else if(itemModel.name == null) {
+				Search.removeDoc(String.valueOf(itemModel.id));
 				em.getTransaction().begin();
 				em.remove(existingItem);
 				em.getTransaction().commit();
 				
+				
 			}else {
+				Search.removeDoc(String.valueOf(existingItem.id));
 				em.getTransaction().begin();
 				existingItem.copyFrom(itemModel);
 				em.persist(existingItem);
-				return existingItem.id;
+				Search.addDoc(existingItem.name, String.valueOf(existingItem.id));
 			}
+			return existingItem.id;
 		}
-		em.getTransaction().commit();
 
-		return item;
 	}
 
 	public static long addUser(UserModel userModel) {
@@ -173,7 +177,7 @@ public class Dao {
 		if (orderId == 0) {
 			query = em.createQuery("SELECT o FROM Order", Order.class);
 		} else {
-			query = em.createQuery("SELECT o FROM Order WHERE o.id =:oderId", Order.class);
+			query = em.createQuery("SELECT o FROM Order WHERE o.id =:oderId ORDER BY o.date", Order.class);
 			query.setParameter("orderId", orderId);
 		}
 
@@ -230,6 +234,7 @@ public class Dao {
 		Order order = em.getReference(Order.class, userItemOrderModel.orderId);
 		UserItemOrderId userItemOrderId = new UserItemOrderId(order, user, item);
 		UserItemOrder userItemOrder = em.getReference(UserItemOrder.class, userItemOrderId);
+		if(!order.isValidated) {
 		if (userItemOrderModel.bundlePart != 0.0) {
 			if (userItemOrder == null) {
 				userItemOrder = new UserItemOrder(user, order, item, userItemOrderModel);
@@ -250,6 +255,10 @@ public class Dao {
 				em.remove(userItemOrder);
 				em.getTransaction().commit();
 			}
+			return false;
+		}
+		}else {
+			//TODO exception for order closed
 			return false;
 		}
 	}
@@ -368,12 +377,12 @@ public class Dao {
 		}
 	}
 
-	public static BetterList<UserItemOrder> getOrderItems(long orderId, long from) {
+	public static BetterList<UserItemOrder> getOrderItems(long orderId, int from) {
 		EntityManager em = getEntityManager();
-		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio From UserItemOrder WHERE uio.order.id = :orderID LIMIT :maxNumber ORDER BY uio.item.id OFFSET :from ROWS", UserItemOrder.class)
+		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio From UserItemOrder WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class)
 		query.setParameter("orderId", orderId);
-		query.setParameter("maxNumber", MAX_NUMBER);
-		query.setParameter("from", from);
+		query.setMaxResults(MAX_NUMBER);
+		query.setFirstResult(from);
 		TypedQuery<UserItemOrder> queryCount = em.createQuery("SELECT uio From UserItemOrder WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class);
 		BetterList<UserItemOrder> itemOrders = new BetterList<>();
 		itemOrders.elementList = query.getResultList();
@@ -396,7 +405,6 @@ public class Dao {
 			user.name = userModel.name;
 			user.secret = userModel.password;
 			em.getTransaction().commit();
-
 			return true;
 		}
 
