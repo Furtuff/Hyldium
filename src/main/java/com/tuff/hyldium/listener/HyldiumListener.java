@@ -37,8 +37,6 @@ public class HyldiumListener implements ServletContextListener {
 			Dao.copyItems();
 		}
 		loadSearchModule();
-		String caca = "caca";
-		System.out.println(caca.getBytes());
 	}
 
 	private void loadSearchModule() {
