@@ -15,6 +15,9 @@ public class ItemModel {
 	public Byte[] photo;
 	public String barCode;	
 	
+	public ItemModel() {
+	}
+
 	public ItemModel(Item item) {
 		this.id = item.id;
 		this.date = item.date;

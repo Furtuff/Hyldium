@@ -91,22 +91,49 @@ public class OrderApi extends Api {
 	}
 
 	@GET
-	@Path("/{orderId}")
-	public Response getOrder(@PathParam("orderId") long orderId) {
+	@Path("/{offset}")
+	public Response getOrders(@PathParam("offset") int offset) {
 
-		return Response.ok(Dao.getOrder(orderId)).header("X-HM-RC", REQUEST_SUCCESS).build();
+		return Response.ok(Dao.getOrders(offset)).header("X-HM-RC", REQUEST_SUCCESS).build();
 	}
 
 	@GET
-	@Path("/delivery/{deliveryId}")
-	public Response getDeliveries(@PathParam("deliveryId") long deliveryId) {
+	@Path("/delivery/{offset}")
+	public Response getDeliveries(@PathParam("offset") int offset) {
 
-		return Response.ok(Dao.getDeliveries(deliveryId)).header("X-HM-RC", REQUEST_SUCCESS).build();
+		return Response.ok(Dao.getDeliveries(offset)).header("X-HM-RC", REQUEST_SUCCESS).build();
+	}
+	@GET
+	@Path("/delivery/details/{deliveryId}/{from}")
+	public Response getDeliveryItems(@PathParam("deliveryId") long deliveryId,@PathParam("from") int from) {
+		if(deliveryId == 0) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}
+
+		return Response.ok(Dao.getDeliveryItems(deliveryId,from)).header("X-HM-RC", REQUEST_SUCCESS).build();
 	}
 	@GET
 	@Path("/{orderId}/{from}")
 	public Response getOrderItems(@PathParam("orderId") long orderId,@PathParam("from") int from) {
-		
+		if(orderId == 0) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}
 		return Response.ok(Dao.getOrderItems(orderId,from)).header("X-HM-RC", REQUEST_SUCCESS).build();
+	}
+	@GET
+	@Path("/{userId}/{orderId}/{from}")
+	public Response getOrderItemsUser(@PathParam("userId") long userId,@PathParam("orderId") long orderId,@PathParam("from") int from) {
+		if(orderId == 0 || userId ==0) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}
+		return Response.ok(Dao.getOrderItemsUser(userId,orderId,from)).header("X-HM-RC", REQUEST_SUCCESS).build();
+	}
+	@GET
+	@Path("/delivery/{userId}/{deliveryId}/{from}")
+	public Response getDeliveriesItemsUser(@PathParam("userId") long userId ,@PathParam("deliveryId") long deliveryId ,@PathParam("from") int from) {
+		if(deliveryId == 0 || userId ==0) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}
+		return Response.ok(Dao.getDeliveriesItemsUser(userId,deliveryId,from)).header("X-HM-RC", REQUEST_SUCCESS).build();
 	}
 }

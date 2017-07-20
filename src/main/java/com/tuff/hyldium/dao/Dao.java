@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -78,10 +79,10 @@ public class Dao {
 		boolean hasNext = true;
 		List<Item> list = new ArrayList<Item>();
 		int line = 2;
-		IndexWriter wr =null;
-		IndexWriterConfig  config= new IndexWriterConfig(new StandardAnalyzer());
+		IndexWriter wr = null;
+		IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
 		try {
-			wr = new IndexWriter(Search.index,config);
+			wr = new IndexWriter(Search.index, config);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -98,7 +99,7 @@ public class Dao {
 			try {
 				item.price = Double.parseDouble(sheet.getCellAt("J" + lineString).getTextValue().replace(",", "."));
 				item.priceHT = Double.parseDouble(sheet.getCellAt("G" + lineString).getTextValue().replace(",", "."));
-				item.byBundle =  ((BigDecimal) sheet.getCellAt("E" + lineString).getValue()).floatValue();
+				item.byBundle = ((BigDecimal) sheet.getCellAt("E" + lineString).getValue()).floatValue();
 				item.TVA = ((BigDecimal) sheet.getCellAt("F" + lineString).getValue()).floatValue();
 				item.date = Calendar.getInstance().getTimeInMillis();
 			} catch (NumberFormatException e) {
@@ -110,7 +111,7 @@ public class Dao {
 			em.persist(item);
 			em.getTransaction().commit();
 			System.out.println(item.id);
-			
+
 			String nextString = String.valueOf(line + 1);
 			if (line + 1 < 10) {
 				nextString = "0" + nextString;
@@ -125,7 +126,7 @@ public class Dao {
 			}
 			line++;
 			try {
-				Search.addDocList(wr,item.name,item.reference, String.valueOf(item.id));
+				Search.addDocList(wr, item.name, item.reference, String.valueOf(item.id));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -142,19 +143,18 @@ public class Dao {
 
 	public static List<Item> getItemsList(int offset) {
 		EntityManager em = getEntityManager();
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.name",
-				Item.class);
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.name", Item.class);
 		query.setMaxResults(MAX_NUMBER);
 		query.setFirstResult(offset);
-		
+
 		return query.getResultList();
 	}
+
 	public static Item getItem(long id) {
 		EntityManager em = getEntityManager();
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id",
-				Item.class);
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id", Item.class);
 		query.setParameter("id", id);
-		
+
 		return query.getSingleResult();
 	}
 
@@ -166,25 +166,24 @@ public class Dao {
 			em.getTransaction().begin();
 			em.persist(item);
 			em.getTransaction().commit();
-			Search.addDoc(item.name,item.reference, String.valueOf(item.id));
+			Search.addDoc(item.name, item.reference, String.valueOf(item.id));
 			return item.id;
 		} else {
 			Item existingItem = em.find(Item.class, itemModel.id);
 			if (existingItem == null) {
 				return -1;
-			} else if(itemModel.name == null) {
+			} else if (itemModel.name == null) {
 				Search.removeDoc(String.valueOf(itemModel.id));
 				em.getTransaction().begin();
 				em.remove(existingItem);
 				em.getTransaction().commit();
-				
-				
-			}else {
+
+			} else {
 				Search.removeDoc(String.valueOf(existingItem.id));
 				em.getTransaction().begin();
 				existingItem.copyFrom(itemModel);
 				em.persist(existingItem);
-				Search.addDoc(existingItem.name, existingItem.reference,String.valueOf(existingItem.id));
+				Search.addDoc(existingItem.name, existingItem.reference, String.valueOf(existingItem.id));
 			}
 			return existingItem.id;
 		}
@@ -200,17 +199,19 @@ public class Dao {
 		return user.id;
 	}
 
-	public static List<Order> getOrder(long orderId) {
+	public static List<OrderModel> getOrders(int offset) {
 		EntityManager em = getEntityManager();
 		TypedQuery<Order> query = null;
-		if (orderId == 0) {
-			query = em.createQuery("SELECT o FROM Order o", Order.class);
-		} else {
-			query = em.createQuery("SELECT o FROM Order o WHERE o.id =:oderId ORDER BY o.date", Order.class);
-			query.setParameter("orderId", orderId);
+		query = em.createQuery("SELECT o FROM Order o  ORDER BY o.date DESC", Order.class);
+		query.setFirstResult(offset);
+		query.setMaxResults(MAX_NUMBER);
+		List<Order> orders = query.getResultList();
+		List<OrderModel> orderModels = new ArrayList<>();
+		for (Order o : orders) {
+			orderModels.add(new OrderModel(o));
 		}
 
-		return query.getResultList();
+		return orderModels;
 	}
 
 	public static List<UserModel> getUserList() {
@@ -220,7 +221,7 @@ public class Dao {
 		List<User> userList = query.getResultList();
 		List<UserModel> list = new ArrayList<>();
 
-		for(User u : userList) {
+		for (User u : userList) {
 			list.add(new UserModel(u));
 		}
 		return list;
@@ -242,23 +243,25 @@ public class Dao {
 		Order order = em.getReference(Order.class, deliveryModel.orderId);
 		delivery.order = order;
 		delivery.name = deliveryModel.name;
+		delivery.date = Calendar.getInstance().getTimeInMillis();
 		em.getTransaction().begin();
 		em.persist(delivery);
 		em.getTransaction().commit();
 		return delivery.id;
 	}
 
-	public static List<Delivery> getDeliveries(long deliveryId) {
+	public static List<DeliveryModel> getDeliveries(int offset) {
 		EntityManager em = getEntityManager();
 		TypedQuery<Delivery> query = null;
-		if (deliveryId == 0) {
-			query = em.createQuery("SELECT o FROM Delivery", Delivery.class);
-		} else {
-			query = em.createQuery("SELECT o FROM Delivery WHERE o.id =:deliveryId ORDER BY o.date", Delivery.class);
-			query.setParameter("deliveryId", deliveryId);
-		}
+		query = em.createQuery("SELECT d FROM Delivery d ORDER BY d.date DESC", Delivery.class);
+		query.setFirstResult(offset);
 
-		return query.getResultList();
+		List<Delivery> deliveries = query.getResultList();
+		List<DeliveryModel> deliveriesModel = new ArrayList<>();
+		for (Delivery d : deliveries) {
+			deliveriesModel.add(new DeliveryModel(d));
+		}
+		return deliveriesModel;
 	}
 
 	public static boolean orderItem(UserItemOrderModel userItemOrderModel) {
@@ -267,32 +270,37 @@ public class Dao {
 		Item item = em.getReference(Item.class, userItemOrderModel.itemId);
 		Order order = em.getReference(Order.class, userItemOrderModel.orderId);
 		UserItemOrderId userItemOrderId = new UserItemOrderId(order, user, item);
-		UserItemOrder userItemOrder = em.getReference(UserItemOrder.class, userItemOrderId);
-		if(!order.isValidated) {
-		if (userItemOrderModel.bundlePart != 0.0) {
-			if (userItemOrder == null) {
-				userItemOrder = new UserItemOrder(user, order, item, userItemOrderModel);
-				em.getTransaction().begin();
-				em.persist(userItemOrder);
-				em.getTransaction().commit();
-			} else {
-				em.getTransaction().begin();
-				userItemOrder.bundlePart = userItemOrderModel.bundlePart;
-				em.getTransaction().commit();
-			}
-
-			return true;
-
-		} else {
-			if (userItemOrder != null) {
-				em.getTransaction().begin();
-				em.remove(userItemOrder);
-				em.getTransaction().commit();
-			}
-			return false;
+		UserItemOrder userItemOrder = null;
+		try {
+		userItemOrder = em.getReference(UserItemOrder.class, userItemOrderId);
+		}catch(EntityNotFoundException e) {
+			
 		}
-		}else {
-			//TODO exception for order closed
+		if (!order.isValidated) {
+			if (userItemOrderModel.bundlePart != 0.0) {
+				if (userItemOrder == null) {
+					userItemOrder = new UserItemOrder(user, order, item, userItemOrderModel);
+					em.getTransaction().begin();
+					em.persist(userItemOrder);
+					em.getTransaction().commit();
+				} else {
+					em.getTransaction().begin();
+					userItemOrder.bundlePart = userItemOrderModel.bundlePart;
+					em.getTransaction().commit();
+				}
+
+				return true;
+
+			} else {
+				if (userItemOrder != null) {
+					em.getTransaction().begin();
+					em.remove(userItemOrder);
+					em.getTransaction().commit();
+				}
+				return false;
+			}
+		} else {
+			// TODO exception for order closed
 			return false;
 		}
 	}
@@ -306,7 +314,8 @@ public class Dao {
 			return false;
 		} else if (orderModel.name == null) {
 			TypedQuery<UserItemOrder> query = null;
-			query = em.createQuery("SELECT uio FROM UserItemOrder uio WHERE uio.order.id =:orderId ", UserItemOrder.class);
+			query = em.createQuery("SELECT uio FROM UserItemOrder uio WHERE uio.order.id =:orderId ",
+					UserItemOrder.class);
 			query.setParameter("orderId", orderId);
 			List<UserItemOrder> itemOrders = query.getResultList();
 			em.getTransaction().begin();
@@ -331,8 +340,8 @@ public class Dao {
 	public static List<UserItemDeliveryModel> copyFromOrder(long deliveryId) {
 		EntityManager em = getEntityManager();
 		Delivery delivery = em.getReference(Delivery.class, deliveryId);
-		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio FROM UserItemOrder uio WHERE uio.order.id=:orderId",
-				UserItemOrder.class);
+		TypedQuery<UserItemOrder> query = em
+				.createQuery("SELECT uio FROM UserItemOrder uio WHERE uio.order.id=:orderId", UserItemOrder.class);
 		query.setParameter("orderId", delivery.order.id);
 		List<UserItemOrder> itemOrders = query.getResultList();
 		em.getTransaction().begin();
@@ -412,17 +421,27 @@ public class Dao {
 		}
 	}
 
-	public static BetterList<UserItemOrder> getOrderItems(long orderId, int from) {
+	public static BetterList<UserItemOrderModel> getOrderItems(long orderId, int from) {
 		EntityManager em = getEntityManager();
-		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio From UserItemOrder uio WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class)
+		TypedQuery<UserItemOrder> query = em.createQuery(
+				"SELECT uio From UserItemOrder uio WHERE uio.order.id =:orderId ORDER BY uio.item.id",
+				UserItemOrder.class);
 		query.setParameter("orderId", orderId);
-		query.setMaxResults(MAX_NUMBER);
+		query.setMaxResults(MAX_NUMBER * 3);
 		query.setFirstResult(from);
-		TypedQuery<UserItemOrder> queryCount = em.createQuery("SELECT uio From UserItemOrder uio WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class);
-		BetterList<UserItemOrder> itemOrders = new BetterList<>();
-		itemOrders.elementList = query.getResultList();
-		itemOrders.elementCount = queryCount.getResultList().size();
-		return itemOrders;
+		TypedQuery<UserItemOrder> queryCount = em.createQuery(
+				"SELECT uio From UserItemOrder uio WHERE uio.order.id =:orderId ORDER BY uio.item.id",
+				UserItemOrder.class);
+		queryCount.setParameter("orderId", orderId);
+		List<UserItemOrder> itemsOrder = query.getResultList();
+		BetterList<UserItemOrderModel> itemOrdersModel = new BetterList<>();
+		itemOrdersModel.elementList = new ArrayList<>();
+		for (UserItemOrder uio : itemsOrder) {
+			itemOrdersModel.elementList.add(new UserItemOrderModel(uio));
+		}
+		itemOrdersModel.elementCount = queryCount.getResultList().size();
+		itemOrdersModel.maxRequestElement = MAX_NUMBER*3;
+		return itemOrdersModel;
 	}
 
 	public static boolean updateUser(UserModel userModel) {
@@ -443,6 +462,80 @@ public class Dao {
 			return true;
 		}
 
+	}
+
+	public static BetterList<UserItemDeliveryModel> getDeliveryItems(long deliveryId, int offset) {
+		EntityManager em = getEntityManager();
+		TypedQuery<UserItemDelivery> query = em.createQuery(
+				"SELECT uid FROM UserItemDelivery uid WHERE uid.delivery.id=:deliveryId ORDER BY uid.item.id",
+				UserItemDelivery.class);
+		query.setParameter("deliveryId", deliveryId);
+		query.setMaxResults(MAX_NUMBER * 3);
+		query.setFirstResult(offset);
+		TypedQuery<UserItemDelivery> queryCount = em.createQuery(
+				"SELECT uid FROM UserItemDelivery uid WHERE uid.delivery.id=:deliveryId ORDER BY uid.item.id",
+				UserItemDelivery.class);
+		queryCount.setParameter("deliveryId", deliveryId);
+		List<UserItemDelivery> itemsDelivery = query.getResultList();
+		BetterList<UserItemDeliveryModel> itemDeliveriesModel = new BetterList<>();
+		itemDeliveriesModel.elementList = new ArrayList<>();
+		for (UserItemDelivery uid : itemsDelivery) {
+			itemDeliveriesModel.elementList.add(new UserItemDeliveryModel(uid));
+		}
+		itemDeliveriesModel.elementCount = queryCount.getResultList().size();
+		itemDeliveriesModel.maxRequestElement = MAX_NUMBER*3;
+		return itemDeliveriesModel;
+	}
+
+	public static BetterList<UserItemOrderModel> getOrderItemsUser(long userId, long orderId, int from) {
+		EntityManager em = getEntityManager();
+		TypedQuery<UserItemOrder> query = em.createQuery(
+				"SELECT uio From UserItemOrder uio WHERE uio.order.id = :orderId AND uio.user.id=:userId ORDER BY uio.item.id",
+				UserItemOrder.class);
+		query.setParameter("orderId", orderId);
+		query.setParameter("userId", userId);
+		query.setMaxResults(MAX_NUMBER * 3);
+		query.setFirstResult(from);
+		TypedQuery<UserItemOrder> queryCount = em.createQuery(
+				"SELECT uio From UserItemOrder uio WHERE uio.order.id = :orderId AND uio.user.id=:userId ORDER BY uio.item.id",
+				UserItemOrder.class);
+		queryCount.setParameter("orderId", orderId);
+		queryCount.setParameter("userId", userId);
+		List<UserItemOrder> itemsOrder = query.getResultList();
+		BetterList<UserItemOrderModel> itemOrdersModel = new BetterList<>();
+		itemOrdersModel.elementList = new ArrayList<>();
+		for (UserItemOrder uio : itemsOrder) {
+			itemOrdersModel.elementList.add(new UserItemOrderModel(uio));
+		}
+		itemOrdersModel.elementCount = queryCount.getResultList().size();
+		itemOrdersModel.maxRequestElement = MAX_NUMBER*3;
+		return itemOrdersModel;
+
+	}
+
+	public static Object getDeliveriesItemsUser(long userId, long deliveryId, int from) {
+		EntityManager em = getEntityManager();
+		TypedQuery<UserItemDelivery> query = em.createQuery(
+				"SELECT uid FROM UserItemDelivery uid WHERE uid.delivery.id=:deliveryId AND uid.user.id=:userId ORDER BY uid.item.id",
+				UserItemDelivery.class);
+		query.setParameter("deliveryId", deliveryId);
+		query.setParameter("userId", userId);
+		query.setMaxResults(MAX_NUMBER * 3);
+		query.setFirstResult(from);
+		TypedQuery<UserItemDelivery> queryCount = em.createQuery(
+				"SELECT uid FROM UserItemDelivery uid WHERE uid.delivery.id=:deliveryId AND uid.user.id=:userId ORDER BY uid.item.id",
+				UserItemDelivery.class);
+		queryCount.setParameter("deliveryId", deliveryId);
+		queryCount.setParameter("userId", userId);
+		List<UserItemDelivery> itemsDelivery = query.getResultList();
+		BetterList<UserItemDeliveryModel> itemDeliveriesModel = new BetterList<>();
+		itemDeliveriesModel.elementList= new ArrayList<>();
+		for (UserItemDelivery uid : itemsDelivery) {
+			itemDeliveriesModel.elementList.add(new UserItemDeliveryModel(uid));
+		}
+		itemDeliveriesModel.maxRequestElement = MAX_NUMBER*3;
+		itemDeliveriesModel.elementCount = queryCount.getResultList().size();
+		return itemDeliveriesModel;
 	}
 
 }

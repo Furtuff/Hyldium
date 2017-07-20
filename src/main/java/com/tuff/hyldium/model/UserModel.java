@@ -9,6 +9,11 @@ public class UserModel {
 	public byte[] password;
 	public byte[] photo;
 	
+	
+	public UserModel() {
+	}
+
+
 	public UserModel(User user) {
 		this.id = user.id;
 		this.name = user.name;

@@ -18,6 +18,9 @@ public class UserItemDeliveryId implements Serializable {
 		this.delivery = delivery;
 		this.item = item;
 	}
+
+	public UserItemDeliveryId() {
+	}
 	
 	
 

@@ -7,5 +7,9 @@ public class BetterList<T> {
 	public int elementCount;
 	public int maxRequestElement;
 	public List<T> elementList;
+	public BetterList() {
+	}
+	
+	
 	
 }

@@ -13,6 +13,9 @@ public class UserItemOrderId implements Serializable {
 	public User user;
 	public Item item;
 	
+	public UserItemOrderId() {
+	}
+
 	public UserItemOrderId(Order order, User user, Item item) {
 	 	this.order = order;
 	 	this.user = user;

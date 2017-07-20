@@ -10,6 +10,10 @@ public class UserItemDeliveryModel {
 	
 	public long date;
 	public float bundlePart;
+	
+	public UserItemDeliveryModel() {
+	}
+
 	public UserItemDeliveryModel(UserItemDelivery itemDelivery) {
 		super();
 		this.deliveryId = itemDelivery.delivery.id;
