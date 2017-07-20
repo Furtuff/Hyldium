@@ -13,6 +13,9 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
@@ -75,7 +78,14 @@ public class Dao {
 		boolean hasNext = true;
 		List<Item> list = new ArrayList<Item>();
 		int line = 2;
-
+		IndexWriter wr =null;
+		IndexWriterConfig  config= new IndexWriterConfig(new StandardAnalyzer());
+		try {
+			wr = new IndexWriter(Search.index,config);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		while (hasNext) {
 			Item item = new Item();
 			String lineString = String.valueOf(line);
@@ -88,7 +98,7 @@ public class Dao {
 			try {
 				item.price = Double.parseDouble(sheet.getCellAt("J" + lineString).getTextValue().replace(",", "."));
 				item.priceHT = Double.parseDouble(sheet.getCellAt("G" + lineString).getTextValue().replace(",", "."));
-				item.byBundle = ((BigDecimal) sheet.getCellAt("E" + lineString).getValue()).floatValue();
+				item.byBundle =  ((BigDecimal) sheet.getCellAt("E" + lineString).getValue()).floatValue();
 				item.TVA = ((BigDecimal) sheet.getCellAt("F" + lineString).getValue()).floatValue();
 				item.date = Calendar.getInstance().getTimeInMillis();
 			} catch (NumberFormatException e) {
@@ -99,7 +109,8 @@ public class Dao {
 			em.getTransaction().begin();
 			em.persist(item);
 			em.getTransaction().commit();
-			Search.addDoc(item.name, String.valueOf(item.id));
+			System.out.println(item.id);
+			
 			String nextString = String.valueOf(line + 1);
 			if (line + 1 < 10) {
 				nextString = "0" + nextString;
@@ -113,9 +124,19 @@ public class Dao {
 				}
 			}
 			line++;
-
+			try {
+				Search.addDocList(wr,item.name,item.reference, String.valueOf(item.id));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-
+		try {
+			wr.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return list;
 	}
 
@@ -128,6 +149,14 @@ public class Dao {
 		
 		return query.getResultList();
 	}
+	public static Item getItem(long id) {
+		EntityManager em = getEntityManager();
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id",
+				Item.class);
+		query.setParameter("id", id);
+		
+		return query.getSingleResult();
+	}
 
 	public static long crudItem(ItemModel itemModel) {
 		EntityManager em = getEntityManager();
@@ -137,7 +166,7 @@ public class Dao {
 			em.getTransaction().begin();
 			em.persist(item);
 			em.getTransaction().commit();
-			Search.addDoc(item.name, String.valueOf(item.id));
+			Search.addDoc(item.name,item.reference, String.valueOf(item.id));
 			return item.id;
 		} else {
 			Item existingItem = em.find(Item.class, itemModel.id);
@@ -155,7 +184,7 @@ public class Dao {
 				em.getTransaction().begin();
 				existingItem.copyFrom(itemModel);
 				em.persist(existingItem);
-				Search.addDoc(existingItem.name, String.valueOf(existingItem.id));
+				Search.addDoc(existingItem.name, existingItem.reference,String.valueOf(existingItem.id));
 			}
 			return existingItem.id;
 		}
@@ -175,21 +204,26 @@ public class Dao {
 		EntityManager em = getEntityManager();
 		TypedQuery<Order> query = null;
 		if (orderId == 0) {
-			query = em.createQuery("SELECT o FROM Order", Order.class);
+			query = em.createQuery("SELECT o FROM Order o", Order.class);
 		} else {
-			query = em.createQuery("SELECT o FROM Order WHERE o.id =:oderId ORDER BY o.date", Order.class);
+			query = em.createQuery("SELECT o FROM Order o WHERE o.id =:oderId ORDER BY o.date", Order.class);
 			query.setParameter("orderId", orderId);
 		}
 
 		return query.getResultList();
 	}
 
-	public static List<User> getUserList() {
+	public static List<UserModel> getUserList() {
 		EntityManager em = getEntityManager();
 
-		TypedQuery<User> query = em.createQuery("SELECT u FROM User d", User.class);
+		TypedQuery<User> query = em.createQuery("SELECT u FROM User u", User.class);
+		List<User> userList = query.getResultList();
+		List<UserModel> list = new ArrayList<>();
 
-		return query.getResultList();
+		for(User u : userList) {
+			list.add(new UserModel(u));
+		}
+		return list;
 	}
 
 	public static long createOrder(OrderModel orderModel) {
@@ -220,7 +254,7 @@ public class Dao {
 		if (deliveryId == 0) {
 			query = em.createQuery("SELECT o FROM Delivery", Delivery.class);
 		} else {
-			query = em.createQuery("SELECT o FROM Delivery WHERE o.id =:deliveryId", Delivery.class);
+			query = em.createQuery("SELECT o FROM Delivery WHERE o.id =:deliveryId ORDER BY o.date", Delivery.class);
 			query.setParameter("deliveryId", deliveryId);
 		}
 
@@ -272,7 +306,7 @@ public class Dao {
 			return false;
 		} else if (orderModel.name == null) {
 			TypedQuery<UserItemOrder> query = null;
-			query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.order.id =:orderId ", UserItemOrder.class);
+			query = em.createQuery("SELECT uio FROM UserItemOrder uio WHERE uio.order.id =:orderId ", UserItemOrder.class);
 			query.setParameter("orderId", orderId);
 			List<UserItemOrder> itemOrders = query.getResultList();
 			em.getTransaction().begin();
@@ -294,20 +328,21 @@ public class Dao {
 		}
 	}
 
-	public static List<UserItemDelivery> copyFromOrder(long deliveryId) {
+	public static List<UserItemDeliveryModel> copyFromOrder(long deliveryId) {
 		EntityManager em = getEntityManager();
 		Delivery delivery = em.getReference(Delivery.class, deliveryId);
-		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio FROM UserItemOrder WHERE uio.order.id=:orderId",
+		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio FROM UserItemOrder uio WHERE uio.order.id=:orderId",
 				UserItemOrder.class);
 		query.setParameter("orderId", delivery.order.id);
 		List<UserItemOrder> itemOrders = query.getResultList();
 		em.getTransaction().begin();
-		List<UserItemDelivery> deliveries = new ArrayList<>();
+		List<UserItemDeliveryModel> deliveries = new ArrayList<>();
 		for (int i = 0; i < itemOrders.size(); i++) {
 			UserItemDelivery userItemDelivery = new UserItemDelivery(delivery, itemOrders.get(i).user,
 					itemOrders.get(i).item, itemOrders.get(i).bundlePart);
-			deliveries.add(userItemDelivery);
 			em.persist(userItemDelivery);
+			deliveries.add(new UserItemDeliveryModel(userItemDelivery));
+
 		}
 		em.getTransaction().commit();
 		return deliveries;
@@ -321,7 +356,7 @@ public class Dao {
 			return false;
 		} else if (deliveryModel.name == null) {
 			TypedQuery<UserItemDelivery> query = null;
-			query = em.createQuery("SELECT uid FROM UserItemDelivery WHERE uid.delivery.id =:deliveryId ",
+			query = em.createQuery("SELECT uid FROM UserItemDelivery uid WHERE uid.delivery.id =:deliveryId ",
 					UserItemDelivery.class);
 			query.setParameter("deliveryId", deliveryId);
 			List<UserItemDelivery> userItemDeliveries = query.getResultList();
@@ -379,11 +414,11 @@ public class Dao {
 
 	public static BetterList<UserItemOrder> getOrderItems(long orderId, int from) {
 		EntityManager em = getEntityManager();
-		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio From UserItemOrder WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class)
+		TypedQuery<UserItemOrder> query = em.createQuery("SELECT uio From UserItemOrder uio WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class)
 		query.setParameter("orderId", orderId);
 		query.setMaxResults(MAX_NUMBER);
 		query.setFirstResult(from);
-		TypedQuery<UserItemOrder> queryCount = em.createQuery("SELECT uio From UserItemOrder WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class);
+		TypedQuery<UserItemOrder> queryCount = em.createQuery("SELECT uio From UserItemOrder uio WHERE uio.order.id = :orderID ORDER BY uio.item.id", UserItemOrder.class);
 		BetterList<UserItemOrder> itemOrders = new BetterList<>();
 		itemOrders.elementList = query.getResultList();
 		itemOrders.elementCount = queryCount.getResultList().size();

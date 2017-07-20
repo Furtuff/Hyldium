@@ -3,7 +3,7 @@
 	<persistence-unit name="HyldiumPU">
 		<provider>com.objectdb.jpa.Provider</provider>
 		<properties>
-			<property name="javax.persistence.jdbc.url" value="/db/hyldium.odb" />
+			<property name="javax.persistence.jdbc.url" value="/home/tuffery/eclipse-workspace/db/hyldium.odb" />
 			<!-- /home/tuffery/eclipse-workspace/db/hyldium.odb
 			/db/hyldium.odb
 			 -->

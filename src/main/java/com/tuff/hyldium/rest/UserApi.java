@@ -22,9 +22,10 @@ public class UserApi extends Api{
 	public Response addUser(UserModel userModel) {
 		if (userModel == null) {
 			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
-		}else if(userModel.id == 0) {
+		}else if(userModel.password == null) {
 			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
 		}else {
+			
 			return Response.ok(Dao.addUser(userModel)).header("X-HM-RC", "OK").build();
 		}
 	}
@@ -43,7 +44,7 @@ public class UserApi extends Api{
 	}
 			
 	@GET
-	@Path("/list/")
+	@Path("/list")
 	public Response getUserList() {
 		return Response.ok(Dao.getUserList()).build();
 	}

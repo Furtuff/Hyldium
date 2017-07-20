@@ -32,8 +32,13 @@ public class HyldiumListener implements ServletContextListener {
 		Enhancer.enhance("com.tuff.hyldium.entity.*");
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 		e.getServletContext().setAttribute("emf", emf);
+		if(Dao.getItemsList(0).isEmpty()) {
+			Search s = new Search();
+			Dao.copyItems();
+		}
 		loadSearchModule();
-
+		String caca = "caca";
+		System.out.println(caca.getBytes());
 	}
 
 	private void loadSearchModule() {
@@ -57,16 +62,14 @@ public class HyldiumListener implements ServletContextListener {
 		List<Item> list = Dao.getItemsList(offset);
 		while (!list.isEmpty()) {
 			for (int i = 0; i < list.size(); i++) {
-				System.out.println(i);
 				try {
-					Search.addDocList(w,list.get(i).name, String.valueOf(list.get(i).id));
+					Search.addDocList(w,list.get(i).name,list.get(i).reference, String.valueOf(list.get(i).id));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			offset += 20;
-			System.out.println(offset);
 			list = Dao.getItemsList(offset);
 		}
 		try {
