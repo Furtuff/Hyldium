@@ -41,7 +41,8 @@ public class ProductApi extends Api {
 
 			Search search = new Search();
 			try {
-				return Response.ok(search.search(param.text)).build();
+				Response caca = Response.ok(search.search(param.text)).build();
+				return caca;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -2,8 +2,10 @@ package com.tuff.hyldium.dao;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -192,7 +194,7 @@ public class Dao {
 
 	public static long addUser(UserModel userModel) {
 		EntityManager em = getEntityManager();
-		User user = new User(userModel.name, userModel.password, userModel.photo);
+		User user = new User(userModel.firstName, userModel.lastName, userModel.login, userModel.password, userModel.photo, userModel.isSU);
 		em.getTransaction().begin();
 		em.persist(user);
 		em.getTransaction().commit();
@@ -449,14 +451,16 @@ public class Dao {
 		User user = em.getReference(User.class, userModel.id);
 		if (user == null) {
 			return false;
-		} else if (userModel.name == null) {
+		} else if (userModel.firstName == null) {
 			em.getTransaction().begin();
 			em.remove(user);
 			em.getTransaction().commit();
 			return false;
 		} else {
 			em.getTransaction().begin();
-			user.name = userModel.name;
+			user.firstName = userModel.firstName;
+			user.lastName = userModel.lastName;
+			user.login = userModel.login;
 			user.secret = userModel.password;
 			em.getTransaction().commit();
 			return true;
@@ -536,6 +540,25 @@ public class Dao {
 		itemDeliveriesModel.maxRequestElement = MAX_NUMBER*3;
 		itemDeliveriesModel.elementCount = queryCount.getResultList().size();
 		return itemDeliveriesModel;
+	}
+	public static List<UserModel> login(UserModel logModel){
+		EntityManager em = getEntityManager();
+		
+		TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id",User.class);
+		query.setParameter("ulogin", logModel.login);
+		List<User> loggedUser = query.getResultList();
+		if(loggedUser == null) {
+			return null;
+		}else if (Arrays.equals(loggedUser.get(0).secret, logModel.password)) {
+			if(loggedUser.get(0).isSuperuser) {
+				return getUserList();
+			}else {
+				List<UserModel> list = new ArrayList<>();
+				list.add(new UserModel(loggedUser.get(0)));
+				return list;
+			}
+		}
+		return null;
 	}
 
 }

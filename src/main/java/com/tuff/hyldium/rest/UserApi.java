@@ -18,6 +18,20 @@ import com.tuff.hyldium.model.UserModel;
 public class UserApi extends Api{
 	
 	@POST
+	@Path("/login")
+	public Response login(UserModel login) {
+		if(login == null) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+
+		}else if (login.login == null || login.password == null) {
+			return Response.ok().header("X-HM-RC", REQUEST_ERROR).build();
+		}else {
+			return Response.ok(Dao.login(login)).header("X-HM-RC", "OK").build();
+		}
+		
+	}
+	
+	@POST
 	@Path("/add")
 	public Response addUser(UserModel userModel) {
 		if (userModel == null) {

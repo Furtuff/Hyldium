@@ -16,6 +16,7 @@ import com.objectdb.Enhancer;
 import com.tuff.hyldium.dao.Dao;
 import com.tuff.hyldium.entity.Item;
 import com.tuff.hyldium.lucene.Search;
+import com.tuff.hyldium.model.UserModel;
 
 public class HyldiumListener implements ServletContextListener {
 
@@ -35,6 +36,15 @@ public class HyldiumListener implements ServletContextListener {
 		if(Dao.getItemsList(0).isEmpty()) {
 			Search s = new Search();
 			Dao.copyItems();
+		}
+		if(Dao.getUserList().isEmpty()) {
+			UserModel baseSu = new UserModel();
+			baseSu.firstName ="jean";
+			baseSu.lastName ="valjean";
+			baseSu.login= "SUperman";
+			baseSu.isSU = true;
+			baseSu.password = "password".getBytes();
+			Dao.addUser(baseSu);
 		}
 		loadSearchModule();
 	}
