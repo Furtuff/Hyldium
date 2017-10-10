@@ -288,6 +288,7 @@ public class Dao {
 				} else {
 					em.getTransaction().begin();
 					userItemOrder.bundlePart = userItemOrderModel.bundlePart;
+					userItemOrder.toString();
 					em.getTransaction().commit();
 				}
 
@@ -333,6 +334,7 @@ public class Dao {
 			order.name = orderModel.name;
 			order.dateName = orderModel.dateName;
 			order.isValidated = orderModel.isValidated;
+			order.toString();
 			em.getTransaction().commit();
 
 			return true;
@@ -386,6 +388,7 @@ public class Dao {
 			em.getTransaction().begin();
 			delivery.name = deliveryModel.name;
 			delivery.order = order;
+			delivery.toString();
 			em.getTransaction().commit();
 
 			return true;
@@ -461,7 +464,8 @@ public class Dao {
 			user.firstName = userModel.firstName;
 			user.lastName = userModel.lastName;
 			user.login = userModel.login;
-			user.secret = userModel.password;
+			user.setPassword(userModel.password);
+			user.toString();
 			em.getTransaction().commit();
 			return true;
 		}

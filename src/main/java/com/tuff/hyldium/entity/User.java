@@ -45,6 +45,9 @@ public class User {
 		this.date = Calendar.getInstance().getTimeInMillis();
 	}
 
+	public void setPassword(byte[] password) {
+		this.secret = password;
+	}
 	@Override
 	public boolean equals(Object obj) {
 		return obj != null && obj instanceof User && id != null && id.equals(((User) obj).id);
