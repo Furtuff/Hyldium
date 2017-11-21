@@ -1,5 +1,7 @@
 package com.tuff.hyldium.model;
 
+import java.util.List;
+
 import com.tuff.hyldium.entity.User;
 
 public class UserModel {
@@ -10,7 +12,7 @@ public class UserModel {
 	public String login;
 	public byte[] password;
 	public byte[] photo;
-	public boolean isSU;
+	public List<String> role;
 	
 	
 	public UserModel() {
@@ -23,7 +25,7 @@ public class UserModel {
 		this.lastName = user.lastName;
 		this.login = user.login;
 		this.photo = user.photo;
-		this.isSU= user.isSuperuser;
+		this.role= user.role;
 	}
 	
 	

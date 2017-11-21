@@ -1,6 +1,7 @@
 package com.tuff.hyldium.listener;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
@@ -19,7 +20,7 @@ import com.tuff.hyldium.lucene.Search;
 import com.tuff.hyldium.model.UserModel;
 
 public class HyldiumListener implements ServletContextListener {
-
+	private final static String ADMIN = "admin";
 	@Override
 	public void contextDestroyed(ServletContextEvent e) {
 		EntityManagerFactory emf = (EntityManagerFactory) e.getServletContext().getAttribute("emf");
@@ -29,7 +30,6 @@ public class HyldiumListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent e) {
-
 		Enhancer.enhance("com.tuff.hyldium.entity.*");
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 		e.getServletContext().setAttribute("emf", emf);
@@ -42,7 +42,9 @@ public class HyldiumListener implements ServletContextListener {
 			baseSu.firstName ="jean";
 			baseSu.lastName ="valjean";
 			baseSu.login= "SUperman";
-			baseSu.isSU = true;
+			List<String> role = new ArrayList<>();
+			role.add(ADMIN);
+			baseSu.role = role;
 			baseSu.password = "password".getBytes();
 			Dao.addUser(baseSu);
 		}
@@ -83,7 +85,7 @@ public class HyldiumListener implements ServletContextListener {
 		try {
 			w.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}

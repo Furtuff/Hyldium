@@ -41,6 +41,7 @@ import com.tuff.hyldium.model.UserModel;
 import com.tuff.hyldium.utils.StreamUtil;
 
 public class Dao {
+	public static final String ADMIN = "admin";
 	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 	private final static int MAX_NUMBER = 20;
 
@@ -194,7 +195,7 @@ public class Dao {
 
 	public static long addUser(UserModel userModel) {
 		EntityManager em = getEntityManager();
-		User user = new User(userModel.firstName, userModel.lastName, userModel.login, userModel.password, userModel.photo, userModel.isSU);
+		User user = new User(userModel.firstName, userModel.lastName, userModel.login, userModel.password, userModel.photo, userModel.role);
 		em.getTransaction().begin();
 		em.persist(user);
 		em.getTransaction().commit();
@@ -554,7 +555,7 @@ public class Dao {
 		if(loggedUser == null) {
 			return null;
 		}else if (Arrays.equals(loggedUser.get(0).secret, logModel.password)) {
-			if(loggedUser.get(0).isSuperuser) {
+			if(loggedUser.get(0).role.contains(ADMIN)) {
 				return getUserList();
 			}else {
 				List<UserModel> list = new ArrayList<>();
