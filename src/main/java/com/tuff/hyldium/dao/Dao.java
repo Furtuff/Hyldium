@@ -42,7 +42,7 @@ import com.tuff.hyldium.utils.StreamUtil;
 
 public class Dao {
 	public static final String ADMIN = "admin";
-	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
+	public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 	private final static int MAX_NUMBER = 20;
 
 	private static EntityManager getEntityManager() {
