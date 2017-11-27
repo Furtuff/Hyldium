@@ -1,8 +1,9 @@
-package com.tuff.hyldium.listener;
+package com.tuff.hyldium.init;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.ws.rs.ApplicationPath;
 
@@ -10,7 +11,9 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 
 import com.objectdb.Enhancer;
 import com.tuff.hyldium.dao.Dao;
@@ -19,13 +22,16 @@ import com.tuff.hyldium.lucene.Search;
 import com.tuff.hyldium.model.UserModel;
 import com.tuff.hyldium.security.AuthFilter;
 
-@ApplicationPath("")
+@ApplicationPath("hoho")
 public class HyldAppInit extends ResourceConfig implements PreDestroy {
 	private final static String ADMIN = "admin";
 
 	public HyldAppInit() {
 		packages("com.tuff.hyldium.rest");
 		register(AuthFilter.class);
+		register(LoggingFeature.class);
+		register(JspMvcFeature.class);
+		property(JspMvcFeature.TEMPLATE_BASE_PATH, "/WEB-INF/jsp");
 		Enhancer.enhance("com.tuff.hyldium.entity.*");
 		if(Dao.getItemsList(0).isEmpty()) {
 			new Search();

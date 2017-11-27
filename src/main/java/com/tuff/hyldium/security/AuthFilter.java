@@ -17,7 +17,7 @@ public class AuthFilter implements ContainerRequestFilter {
 		String method = containerRequest.getMethod();
 		String path = containerRequest.getUriInfo().getPath(true);
 		
-		if(method.equals("GET")) {
+		if(method.equals("GET")|| path.contains("login")) {
 			return;
 		}
 		
