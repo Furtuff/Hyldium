@@ -1,17 +1,17 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Login hyldium</title>
-<link rel="stylesheet" type="text/css" href="Login.css">
-<script src="Login.js" type="text/javascript"></script>
+<title>Hyldium</title>
+<link rel="stylesheet" type="text/css" href="css/login">
+<script src="js/Login.js" type="text/javascript"></script>
 </head>
+<body>
+<c:out value="${it.path}"></c:out>
 <form action="/Hyldium/hoho/login/">
 	<div class="imgcontainer">
-		<img src="img_avatar2.jpg" alt="Avatar" class="avatar">
+		<img src="img/img_avatar2" alt="Avatar" class="avatar">
 	</div>
 
 	<div class="container">

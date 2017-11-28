@@ -14,6 +14,7 @@ import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
+import org.glassfish.jersey.servlet.ServletProperties;
 
 import com.objectdb.Enhancer;
 import com.tuff.hyldium.dao.Dao;
@@ -30,8 +31,8 @@ public class HyldAppInit extends ResourceConfig implements PreDestroy {
 		packages("com.tuff.hyldium.rest");
 		register(AuthFilter.class);
 		register(LoggingFeature.class);
-		register(JspMvcFeature.class);
 		property(JspMvcFeature.TEMPLATE_BASE_PATH, "/WEB-INF/jsp");
+		register(JspMvcFeature.class);
 		Enhancer.enhance("com.tuff.hyldium.entity.*");
 		if(Dao.getItemsList(0).isEmpty()) {
 			new Search();
