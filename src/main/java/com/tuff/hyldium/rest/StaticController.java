@@ -42,7 +42,7 @@ public class StaticController {
 	@GET
 	@Path("{param1 : ^(?![\\s\\S])|(\\w+/)*?}img/{id}")
 	public Response getImg(@Context HttpServletRequest request, @PathParam("id") String id) {
-		String path = request.getSession().getServletContext().getRealPath("/WEB-INF/img/" + id + ".jpg");
+		String path = request.getSession().getServletContext().getRealPath("/WEB-INF/img/" + id);
 
 		File f = new File(path);
 		if (f.exists()) {

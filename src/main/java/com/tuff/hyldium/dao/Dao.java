@@ -196,6 +196,11 @@ public class Dao {
 	public static long addUser(UserModel userModel) {
 		EntityManager em = getEntityManager();
 		User user = new User(userModel.firstName, userModel.lastName, userModel.login, userModel.password, userModel.photo, userModel.role);
+		TypedQuery<User> query = null;
+		query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id",User.class);
+		if (query.getSingleResult() != null) {
+			return -1;
+		}
 		em.getTransaction().begin();
 		em.persist(user);
 		em.getTransaction().commit();
@@ -552,7 +557,7 @@ public class Dao {
 		TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id",User.class);
 		query.setParameter("ulogin", logModel.login);
 		List<User> loggedUser = query.getResultList();
-		if(loggedUser == null) {
+		if(loggedUser == null || loggedUser.size() == 0) {
 			return null;
 		}else if (Arrays.equals(loggedUser.get(0).secret, logModel.password)) {
 			if(loggedUser.get(0).role.contains(ADMIN)) {

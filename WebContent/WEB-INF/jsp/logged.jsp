@@ -1,17 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-	<jsp:directive.page contentType="text/html; charset=ISO-8859-1" 
-		pageEncoding="ISO-8859-1" session="false"/>
-	<jsp:output doctype-root-element="html"
-		doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
-		omit-xml-declaration="true" />
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="rbt" uri="urn:org:glassfish:jersey:servlet:mvc" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Insert title here</title>
+<title>Groupement d'achat</title>
+<link rel="stylesheet" type="text/css" href="css/logged"></link>
+<script type="text/javascript" src="js/jquery"></script>
+<script type="text/javascript" src="js/logged"></script>
+
 </head>
 <body>
-	<H1>Logged</H1>
+	<H1>Groupement d'achat</H1>
+	<div>
+		<ul id ="menu">
+		  <li><a id='order' class="menu" >Commandes</a></li>
+		  <li><a id ='user'  class="menu" >Utilisateurs</a></li>
+		  <li><a id='item'  class="menu">BDD</a></li>
+		  <li style="float:right"><a id='disconnect'>Déconnexion</a></li>
+		</ul>
+	</div>
+	<div id="frame-container">
+	
+	
+	
+	
+	
+	</div>
 </body>
 </html>
-</jsp:root>
