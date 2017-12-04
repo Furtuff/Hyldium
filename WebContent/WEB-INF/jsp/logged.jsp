@@ -1,6 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="rbt" uri="urn:org:glassfish:jersey:servlet:mvc" %>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
 <title>Groupement d'achat</title>
 <link rel="stylesheet" type="text/css" href="css/logged"></link>

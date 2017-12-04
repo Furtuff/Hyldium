@@ -23,7 +23,9 @@ import javax.xml.bind.DatatypeConverter;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import com.tuff.hyldium.dao.Dao;
+import com.tuff.hyldium.model.SubModel;
 import com.tuff.hyldium.model.UserModel;
+import com.tuff.hyldium.utils.Constant;
 @Produces(MediaType.TEXT_HTML)
 @Path("")
 public class ManageApi extends Api {
@@ -50,14 +52,32 @@ public class ManageApi extends Api {
 		}
 		Map<String, String> error = new HashMap<String, String>();
 		error.put("message","Try Again");
-		return Response.ok(new Viewable("/login.jsp",error)).build() ;
-		
+		return Response.ok(new Viewable("/login.jsp",error)).build() ;	
 	}
 
-
-	@POST
+	@GET
 	@Path("/logged")
 	public Response logged() {
 		return Response.ok().entity(new Viewable("/logged.jsp")).build();
+	}
+	@RolesAllowed(Dao.ADMIN)
+	@POST
+	@Path("logged")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getSubmenu(SubModel subModel) {
+		Response response = Response.noContent().build();
+		switch(subModel.sub) {
+		case Constant.ITEM:
+			response = Response.ok(new Viewable("/logged.jsp")).build();
+			break;
+		case Constant.ORDER:
+			response = Response.ok(new Viewable("/logged.jsp")).build();
+			break;
+		case Constant.USER:
+			response = Response.ok(new Viewable("/logged.jsp")).build();
+			break;
+		
+		}
+		return response;
 	}
 }

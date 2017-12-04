@@ -198,7 +198,9 @@ public class Dao {
 		User user = new User(userModel.firstName, userModel.lastName, userModel.login, userModel.password, userModel.photo, userModel.role);
 		TypedQuery<User> query = null;
 		query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id",User.class);
-		if (query.getSingleResult() != null) {
+		query.setParameter("ulogin", userModel.login);
+		List<User> prout = query.getResultList();
+		if (!query.getResultList().isEmpty()) {
 			return -1;
 		}
 		em.getTransaction().begin();

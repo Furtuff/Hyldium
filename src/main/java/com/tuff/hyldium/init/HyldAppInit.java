@@ -6,6 +6,7 @@ import java.util.Base64;
 import java.util.List;
 
 import javax.ws.rs.ApplicationPath;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -30,6 +31,7 @@ public class HyldAppInit extends ResourceConfig implements PreDestroy {
 		packages("com.tuff.hyldium.rest");
 		register(AuthFilter.class);
 		register(LoggingFeature.class);
+		register(JacksonFeature.class);
 		property(JspMvcFeature.TEMPLATE_BASE_PATH, "/WEB-INF/jsp");
 		register(JspMvcFeature.class);
 		Enhancer.enhance("com.tuff.hyldium.entity.*");
@@ -45,7 +47,7 @@ public class HyldAppInit extends ResourceConfig implements PreDestroy {
 			List<String> role = new ArrayList<>();
 			role.add(ADMIN);
 			baseSu.role = role;
-			baseSu.password = "password".getBytes();
+			baseSu.password = Base64.getEncoder().encode("password".getBytes());
 			Dao.addUser(baseSu);
 		}
 		loadSearchModule();

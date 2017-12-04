@@ -9,7 +9,7 @@ window.addEventListener('load',function(){
 	    form.addEventListener("submit", processForm);
 		}
 	}else{
-		httpPost(token);
+		window.location = window.location.href.replace('login','logged');
 	}
 });
 function processForm(e) {
@@ -18,13 +18,14 @@ function processForm(e) {
     var obj ={};
     for(var i = 0 ; i < elements.length ; i++){
         var item = elements.item(i);
-        obj[item.name] = item.value;
+        if(item.name == 'password'){
+        	obj[item.name] =btoa(item.value);
+        }else{
+        	obj[item.name] = item.value;
+        }
+        
     }
-   
-
-    obj.password = btoa(obj.password);
-    
-
+    obj.password = string2Bin(obj.password);
     var jsonParam = JSON.stringify(obj);
     
     httpPost(jsonParam);
@@ -45,8 +46,10 @@ function httpPost(jsonParam)
     xmlHttp.send(jsonParam);
     return xmlHttp.responseText;
 }
-function base64ToArray(base64) {
-	
-	 bytes = new Uint8Array(base64);
-    return bytes;
-}
+function string2Bin(str) {
+	  var result = [];
+	  for (var i = 0; i < str.length; i++) {
+	    result.push(str.charCodeAt(i));
+	  }
+	  return result;
+	}

@@ -22,9 +22,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.owlike</groupId>
-			<artifactId>genson</artifactId>
-			<version>1.4</version>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-json-jackson</artifactId>
+		    <version>2.26</version>
 		</dependency>
 		<dependency>
 			<groupId>com.objectdb</groupId>

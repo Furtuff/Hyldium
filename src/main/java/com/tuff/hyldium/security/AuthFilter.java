@@ -1,6 +1,7 @@
 package com.tuff.hyldium.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -32,15 +33,15 @@ public class AuthFilter implements ContainerRequestFilter {
 		userModel.login = userData[0];
 		userModel.password = userData[1].getBytes();
 
-		UserModel authenticationResult =  Dao.login(userModel).get(0);
+		List<UserModel> authenticationResult =  Dao.login(userModel);
 		
-		if (authenticationResult == null) {
+		if (authenticationResult == null || authenticationResult.get(0) == null) {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 		
         String scheme = containerRequest.getUriInfo().getRequestUri().getScheme();
 
-		containerRequest.setSecurityContext(new HyldiumSecurityContext(authenticationResult, scheme));
+		containerRequest.setSecurityContext(new HyldiumSecurityContext(authenticationResult.get(0), scheme));
 	}
 
 }

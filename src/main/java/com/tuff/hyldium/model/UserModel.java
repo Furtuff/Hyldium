@@ -2,8 +2,9 @@ package com.tuff.hyldium.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tuff.hyldium.entity.User;
-
+@JsonIgnoreProperties(ignoreUnknown= true)
 public class UserModel {
 
 	public long id;
