@@ -5,10 +5,10 @@ $(document).ready(function(){
 		sessionStorage.setItem('success',true);
 		window.location = url;
 	}
-	var selected = sessionStorage.getItem('menu')
+	var selected = sessionStorage.getItem('menu');
 
 	$("a").click(function(){
-	    
+		$("#titre").text($(this).text());
 	    $("a.active").removeClass("active");
 	    $(this).addClass("active");
 	    if(this.id == 'disconnect'){
@@ -24,7 +24,7 @@ $(document).ready(function(){
 	    }
 	});
 	
-	if(selected || selected.length >0){
+	if(selected){
 		$('#'+selected).trigger('click');
 	}
 });
@@ -34,8 +34,16 @@ function httpPost(jsonParam, element)
 	var theUrl = window.location.href 
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "POST", theUrl, true ); 
+    xmlHttp.overrideMimeType('application/javascript');
     xmlHttp.onload = function(){
        element.innerHTML = xmlHttp.responseText;
+       $(document).ready(function() {
+    	var elem = document.getElementById('js');
+    	$.cachedScript( theUrl.replace('logged',elem.dataset.js)).done(function( script, textStatus ) {
+    		  $('head').append(script);
+    		  console.log( textStatus );
+    		});
+       });
     };
 	xmlHttp.setRequestHeader("Content-Type", "application/json");
 	xmlHttp.setRequestHeader("Authorization", "Basic " + btoa(auth.login+':'+bin2Str(auth.password)));

@@ -1,0 +1,34 @@
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 20%;
+    border-radius: 2px;	
+}
+.delete{
+	background-color: #f23f13;
+	width: 15%;
+	border: 2px;
+
+	
+	
+}
+.resetpwd{
+	background-color: #e8970b;
+	border: 2px;
+	width : 15%;
+	
+}
+input {
+	padding: 14px 20px;
+	margin: 8px 0;
+	
+}
+input[type="text"] {
+    font-size:14px;
+    font-weight: bold;
+    font-family:"Lucida Console";
+}

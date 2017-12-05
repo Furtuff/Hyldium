@@ -4,7 +4,6 @@ import java.security.Principal;
 
 import javax.ws.rs.core.SecurityContext;
 
-import com.tuff.hyldium.entity.User;
 import com.tuff.hyldium.model.UserModel;
 
 public class HyldiumSecurityContext implements SecurityContext {

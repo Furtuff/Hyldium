@@ -8,7 +8,7 @@
 
 </head>
 <body>
-	<H1>Groupement d'achat</H1>
+	<H1 id='titre'>Groupement d'achat</H1>
 	<div>
 		<ul id ="menu">
 		  <li><a id='order' class="menu" >Commandes</a></li>

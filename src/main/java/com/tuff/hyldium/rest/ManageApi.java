@@ -4,11 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -16,9 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.DatatypeConverter;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 
@@ -74,7 +70,8 @@ public class ManageApi extends Api {
 			response = Response.ok(new Viewable("/logged.jsp")).build();
 			break;
 		case Constant.USER:
-			response = Response.ok(new Viewable("/logged.jsp")).build();
+			List<UserModel> userList = Dao.getUserList();
+			response = Response.ok(new Viewable("/users.jsp",userList)).build();
 			break;
 		
 		}
