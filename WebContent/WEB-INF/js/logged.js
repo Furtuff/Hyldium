@@ -39,7 +39,7 @@ function httpPost(jsonParam, element)
        element.innerHTML = xmlHttp.responseText;
        $(document).ready(function() {
     	var elem = document.getElementById('js');
-    	$.cachedScript( theUrl.replace('logged',elem.dataset.js)).done(function( script, textStatus ) {
+    	$.getScript( theUrl.replace('logged',elem.dataset.js)).done(function( script, textStatus ) {
     		  $('head').append(script);
     		  console.log( textStatus );
     		});

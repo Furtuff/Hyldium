@@ -195,11 +195,11 @@ public class Dao {
 
 	public static long addUser(UserModel userModel) {
 		EntityManager em = getEntityManager();
-		User user = new User(userModel.firstName, userModel.lastName, userModel.login, userModel.password, userModel.photo, userModel.role);
+		User user = new User(userModel.firstName, userModel.lastName, userModel.login, userModel.password,
+				userModel.photo, userModel.role);
 		TypedQuery<User> query = null;
-		query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id",User.class);
+		query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id", User.class);
 		query.setParameter("ulogin", userModel.login);
-		List<User> prout = query.getResultList();
 		if (!query.getResultList().isEmpty()) {
 			return -1;
 		}
@@ -282,9 +282,9 @@ public class Dao {
 		UserItemOrderId userItemOrderId = new UserItemOrderId(order, user, item);
 		UserItemOrder userItemOrder = null;
 		try {
-		userItemOrder = em.getReference(UserItemOrder.class, userItemOrderId);
-		}catch(EntityNotFoundException e) {
-			
+			userItemOrder = em.getReference(UserItemOrder.class, userItemOrderId);
+		} catch (EntityNotFoundException e) {
+
 		}
 		if (!order.isValidated) {
 			if (userItemOrderModel.bundlePart != 0.0) {
@@ -453,7 +453,7 @@ public class Dao {
 			itemOrdersModel.elementList.add(new UserItemOrderModel(uio));
 		}
 		itemOrdersModel.elementCount = queryCount.getResultList().size();
-		itemOrdersModel.maxRequestElement = MAX_NUMBER*3;
+		itemOrdersModel.maxRequestElement = MAX_NUMBER * 3;
 		return itemOrdersModel;
 	}
 
@@ -463,17 +463,29 @@ public class Dao {
 		if (user == null) {
 			return false;
 		} else if (userModel.firstName == null) {
-			em.getTransaction().begin();
-			em.remove(user);
-			em.getTransaction().commit();
+			int count = 2;
+			if (user.role.contains(ADMIN)) {
+				count = 0;
+				for (UserModel userLambda : getUserList()) {
+					if (userLambda.role.contains(ADMIN)) {
+						count++;
+					}
+				}
+			}
+			if (count > 1) {
+				em.getTransaction().begin();
+				em.remove(user);
+				em.getTransaction().commit();
+			}
 			return false;
 		} else {
 			em.getTransaction().begin();
 			user.firstName = userModel.firstName;
 			user.lastName = userModel.lastName;
 			user.login = userModel.login;
-			user.setPassword(userModel.password);
-			user.toString();
+			if(userModel.password !=null) {
+				user.setPassword(userModel.password);
+			}
 			em.getTransaction().commit();
 			return true;
 		}
@@ -499,7 +511,7 @@ public class Dao {
 			itemDeliveriesModel.elementList.add(new UserItemDeliveryModel(uid));
 		}
 		itemDeliveriesModel.elementCount = queryCount.getResultList().size();
-		itemDeliveriesModel.maxRequestElement = MAX_NUMBER*3;
+		itemDeliveriesModel.maxRequestElement = MAX_NUMBER * 3;
 		return itemDeliveriesModel;
 	}
 
@@ -524,7 +536,7 @@ public class Dao {
 			itemOrdersModel.elementList.add(new UserItemOrderModel(uio));
 		}
 		itemOrdersModel.elementCount = queryCount.getResultList().size();
-		itemOrdersModel.maxRequestElement = MAX_NUMBER*3;
+		itemOrdersModel.maxRequestElement = MAX_NUMBER * 3;
 		return itemOrdersModel;
 
 	}
@@ -545,26 +557,27 @@ public class Dao {
 		queryCount.setParameter("userId", userId);
 		List<UserItemDelivery> itemsDelivery = query.getResultList();
 		BetterList<UserItemDeliveryModel> itemDeliveriesModel = new BetterList<>();
-		itemDeliveriesModel.elementList= new ArrayList<>();
+		itemDeliveriesModel.elementList = new ArrayList<>();
 		for (UserItemDelivery uid : itemsDelivery) {
 			itemDeliveriesModel.elementList.add(new UserItemDeliveryModel(uid));
 		}
-		itemDeliveriesModel.maxRequestElement = MAX_NUMBER*3;
+		itemDeliveriesModel.maxRequestElement = MAX_NUMBER * 3;
 		itemDeliveriesModel.elementCount = queryCount.getResultList().size();
 		return itemDeliveriesModel;
 	}
-	public static List<UserModel> login(UserModel logModel){
+
+	public static List<UserModel> login(UserModel logModel) {
 		EntityManager em = getEntityManager();
-		
-		TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id",User.class);
+
+		TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.login=:ulogin ORDER BY u.id", User.class);
 		query.setParameter("ulogin", logModel.login);
 		List<User> loggedUser = query.getResultList();
-		if(loggedUser == null || loggedUser.size() == 0) {
+		if (loggedUser == null || loggedUser.size() == 0) {
 			return null;
-		}else if (Arrays.equals(loggedUser.get(0).secret, logModel.password)) {
-			if(loggedUser.get(0).role.contains(ADMIN)) {
+		} else if (Arrays.equals(loggedUser.get(0).secret, logModel.password)) {
+			if (loggedUser.get(0).role.contains(ADMIN)) {
 				return getUserList();
-			}else {
+			} else {
 				List<UserModel> list = new ArrayList<>();
 				list.add(new UserModel(loggedUser.get(0)));
 				return list;
