@@ -32,5 +32,94 @@ public class ItemModel {
 		this.barCode = item.barCode;
 		
 	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getDate() {
+		return date;
+	}
+
+	public void setDate(long date) {
+		this.date = date;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public double getPriceHT() {
+		return priceHT;
+	}
+
+	public void setPriceHT(double priceHT) {
+		this.priceHT = priceHT;
+	}
+
+	public float getByBundle() {
+		return byBundle;
+	}
+
+	public void setByBundle(float byBundle) {
+		this.byBundle = byBundle;
+	}
+
+	public float getTVA() {
+		return TVA;
+	}
+
+	public void setTVA(float tVA) {
+		TVA = tVA;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public Byte[] getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(Byte[] photo) {
+		this.photo = photo;
+	}
+
+	public String getBarCode() {
+		return barCode;
+	}
+
+	public void setBarCode(String barCode) {
+		this.barCode = barCode;
+	}
+	
 }
 

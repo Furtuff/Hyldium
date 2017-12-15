@@ -20,6 +20,7 @@ import com.objectdb.Enhancer;
 import com.tuff.hyldium.dao.Dao;
 import com.tuff.hyldium.entity.Item;
 import com.tuff.hyldium.lucene.Search;
+import com.tuff.hyldium.model.ItemModel;
 import com.tuff.hyldium.model.UserModel;
 import com.tuff.hyldium.security.AuthFilter;
 
@@ -71,7 +72,7 @@ public class HyldAppInit extends ResourceConfig implements PreDestroy {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		List<Item> list = Dao.getItemsList(offset);
+		List<ItemModel> list = Dao.getItemsList(offset);
 		while (!list.isEmpty()) {
 			for (int i = 0; i < list.size(); i++) {
 				try {
