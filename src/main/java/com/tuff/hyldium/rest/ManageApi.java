@@ -114,8 +114,8 @@ public class ManageApi extends Api {
 	public Response productAction(List<ItemModel> items, @PathParam("action") String action) {
 		Response response = Response.noContent().build();
 		//response = Response.ok(new Viewable("products.jsp",Dao.getItemsList(0))).build();
-		
+
 		return response;
-		
+
 	}
 }

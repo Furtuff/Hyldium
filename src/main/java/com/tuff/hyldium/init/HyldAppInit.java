@@ -2,8 +2,8 @@ package com.tuff.hyldium.init;
 
 import com.objectdb.Enhancer;
 import com.tuff.hyldium.dao.Dao;
-import com.tuff.hyldium.entity.Item;
 import com.tuff.hyldium.lucene.Search;
+import com.tuff.hyldium.model.ItemModel;
 import com.tuff.hyldium.model.UserModel;
 import com.tuff.hyldium.security.AuthFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
