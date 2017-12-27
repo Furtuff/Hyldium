@@ -1,44 +1,23 @@
 package com.tuff.hyldium.dao;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-
+import com.tuff.hyldium.entity.*;
+import com.tuff.hyldium.lucene.Search;
+import com.tuff.hyldium.model.*;
+import com.tuff.hyldium.utils.StreamUtil;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
-import com.tuff.hyldium.entity.Delivery;
-import com.tuff.hyldium.entity.Item;
-import com.tuff.hyldium.entity.Order;
-import com.tuff.hyldium.entity.User;
-import com.tuff.hyldium.entity.UserItemDelivery;
-import com.tuff.hyldium.entity.UserItemOrder;
-import com.tuff.hyldium.lucene.Search;
-import com.tuff.hyldium.model.BetterList;
-import com.tuff.hyldium.model.DeliveryModel;
-import com.tuff.hyldium.model.ItemModel;
-import com.tuff.hyldium.model.OrderModel;
-import com.tuff.hyldium.model.UserItemDeliveryId;
-import com.tuff.hyldium.model.UserItemDeliveryModel;
-import com.tuff.hyldium.model.UserItemOrderId;
-import com.tuff.hyldium.model.UserItemOrderModel;
-import com.tuff.hyldium.model.UserModel;
-import com.tuff.hyldium.utils.StreamUtil;
+import javax.persistence.*;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 public class Dao {
 	public static final String ADMIN = "admin";
