@@ -13,7 +13,7 @@
 		<ul id ="menu">
 		  <li><a id='order' class="menu" >Commandes</a></li>
 		  <li><a id ='user'  class="menu" >Utilisateurs</a></li>
-		  <li><a id='item'  class="menu">BDD</a></li>
+		  <li><a id='item'  class="menu">Produits</a></li>
 		  <li style="float:right"><a id='disconnect'>Déconnexion</a></li>
 		</ul>
 	</div>

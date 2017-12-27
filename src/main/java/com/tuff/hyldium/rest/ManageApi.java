@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import com.tuff.hyldium.dao.Dao;
+import com.tuff.hyldium.model.ItemModel;
 import com.tuff.hyldium.model.SubModel;
 import com.tuff.hyldium.model.UserModel;
 import com.tuff.hyldium.utils.Constant;
@@ -66,7 +67,7 @@ public class ManageApi extends Api {
 		Response response = Response.noContent().build();
 		switch (subModel.sub) {
 		case Constant.ITEM:
-			response = Response.ok(new Viewable("/logged.jsp")).build();
+			response = Response.ok(new Viewable("/products.jsp",Dao.getItemsList(0))).build();
 			break;
 		case Constant.ORDER:
 			response = Response.ok(new Viewable("/logged.jsp")).build();
@@ -105,5 +106,16 @@ public class ManageApi extends Api {
 		}
 
 		return response;
+	}
+	@RolesAllowed(Dao.ADMIN)
+	@POST
+	@Path("/logged/products/{action}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response productAction(List<ItemModel> items, @PathParam("action") String action) {
+		Response response = Response.noContent().build();
+		//response = Response.ok(new Viewable("products.jsp",Dao.getItemsList(0))).build();
+		
+		return response;
+		
 	}
 }

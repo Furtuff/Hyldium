@@ -1,49 +1,28 @@
 package com.tuff.hyldium.dao;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-
+import com.tuff.hyldium.entity.*;
+import com.tuff.hyldium.lucene.Search;
+import com.tuff.hyldium.model.*;
+import com.tuff.hyldium.utils.StreamUtil;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
-import com.tuff.hyldium.entity.Delivery;
-import com.tuff.hyldium.entity.Item;
-import com.tuff.hyldium.entity.Order;
-import com.tuff.hyldium.entity.User;
-import com.tuff.hyldium.entity.UserItemDelivery;
-import com.tuff.hyldium.entity.UserItemOrder;
-import com.tuff.hyldium.lucene.Search;
-import com.tuff.hyldium.model.BetterList;
-import com.tuff.hyldium.model.DeliveryModel;
-import com.tuff.hyldium.model.ItemModel;
-import com.tuff.hyldium.model.OrderModel;
-import com.tuff.hyldium.model.UserItemDeliveryId;
-import com.tuff.hyldium.model.UserItemDeliveryModel;
-import com.tuff.hyldium.model.UserItemOrderId;
-import com.tuff.hyldium.model.UserItemOrderModel;
-import com.tuff.hyldium.model.UserModel;
-import com.tuff.hyldium.utils.StreamUtil;
+import javax.persistence.*;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 public class Dao {
 	public static final String ADMIN = "admin";
-	public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 	private final static int MAX_NUMBER = 20;
+    public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 
 	private static EntityManager getEntityManager() {
 		return emf.createEntityManager();
@@ -65,12 +44,12 @@ public class Dao {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		List<Item> prout = saveItemListFromSheet(sheet);
-		if (prout == null) {
+		List<Item> list = saveItemListFromSheet(sheet);
+		if (list == null) {
 			return null;
 
 		} else {
-			return prout;
+			return list;
 		}
 
 	}
@@ -97,9 +76,9 @@ public class Dao {
 				lineString = "0" + lineString;
 			}
 			System.out.println(line);
-			item.reference = (String) sheet.getCellAt("A" + lineString).getTextValue();
-			item.name = (String) sheet.getCellAt("B" + lineString).getTextValue();
-			try {
+            item.reference = sheet.getCellAt("A" + lineString).getTextValue();
+            item.name = sheet.getCellAt("B" + lineString).getTextValue();
+            try {
 				item.price = Double.parseDouble(sheet.getCellAt("J" + lineString).getTextValue().replace(",", "."));
 				item.priceHT = Double.parseDouble(sheet.getCellAt("G" + lineString).getTextValue().replace(",", "."));
 				item.byBundle = ((BigDecimal) sheet.getCellAt("E" + lineString).getValue()).floatValue();
@@ -144,19 +123,29 @@ public class Dao {
 		return list;
 	}
 
-	public static List<Item> getItemsList(int offset) {
+	public static List<ItemModel> getItemsList(int offset) {
 		EntityManager em = getEntityManager();
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.name", Item.class);
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.reference", Item.class);
 		query.setMaxResults(MAX_NUMBER);
 		query.setFirstResult(offset);
-
-		return query.getResultList();
+		List<ItemModel> result = new ArrayList<>();
+		for(Item i : query.getResultList()) {
+			result.add(new ItemModel(i));
+		}
+		return result;
 	}
 
 	public static Item getItem(long id) {
 		EntityManager em = getEntityManager();
 		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id", Item.class);
 		query.setParameter("id", id);
+
+		return query.getSingleResult();
+	}
+	public static Item getItemsByRef(ItemModel itemModel) {
+		EntityManager em = getEntityManager();
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id", Item.class);
+		query.setParameter("id", itemModel.id);
 
 		return query.getSingleResult();
 	}

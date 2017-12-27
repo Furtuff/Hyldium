@@ -39,7 +39,6 @@
 			 </c:forEach>/>Admin
 		<button type ="button" class='resetpwd' data-id="${user.id}" >reset MDP</button>
 		<button type="button" class="delete" data-id="${user.id}">supprimer</button>
-		<button type="submit" style="display: none" data-id="${user.id}" id ="submit-user" > sauvegarder</button>
 	</form>
 </c:forEach>
 

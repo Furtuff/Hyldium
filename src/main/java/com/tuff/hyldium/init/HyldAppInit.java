@@ -28,7 +28,7 @@ public class HyldAppInit extends ResourceConfig implements PreDestroy {
 		packages("com.tuff.hyldium.rest");
 		register(AuthFilter.class);
 		register(LoggingFeature.class);
-		register(JacksonFeature.class);
+		register(com.tuff.hyldium.init.JacksonFeature.class);
 		property(JspMvcFeature.TEMPLATE_BASE_PATH, "/WEB-INF/jsp");
 		register(JspMvcFeature.class);
 		Enhancer.enhance("com.tuff.hyldium.entity.*");
@@ -68,7 +68,7 @@ public class HyldAppInit extends ResourceConfig implements PreDestroy {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		List<Item> list = Dao.getItemsList(offset);
+		List<ItemModel> list = Dao.getItemsList(offset);
 		while (!list.isEmpty()) {
 			for (int i = 0; i < list.size(); i++) {
 				try {
