@@ -44,12 +44,12 @@ public class Dao {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		List<Item> prout = saveItemListFromSheet(sheet);
-		if (prout == null) {
+		List<Item> list = saveItemListFromSheet(sheet);
+		if (list == null) {
 			return null;
 
 		} else {
-			return prout;
+			return list;
 		}
 
 	}
@@ -123,19 +123,29 @@ public class Dao {
 		return list;
 	}
 
-	public static List<Item> getItemsList(int offset) {
+	public static List<ItemModel> getItemsList(int offset) {
 		EntityManager em = getEntityManager();
-		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.name", Item.class);
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d ORDER BY d.reference", Item.class);
 		query.setMaxResults(MAX_NUMBER);
 		query.setFirstResult(offset);
-
-		return query.getResultList();
+		List<ItemModel> result = new ArrayList<>();
+		for(Item i : query.getResultList()) {
+			result.add(new ItemModel(i));
+		}
+		return result;
 	}
 
 	public static Item getItem(long id) {
 		EntityManager em = getEntityManager();
 		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id", Item.class);
 		query.setParameter("id", id);
+
+		return query.getSingleResult();
+	}
+	public static Item getItemsByRef(ItemModel itemModel) {
+		EntityManager em = getEntityManager();
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id", Item.class);
+		query.setParameter("id", itemModel.id);
 
 		return query.getSingleResult();
 	}

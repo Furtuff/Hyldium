@@ -1,0 +1,97 @@
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 20%;
+    border-radius: 2px;	
+}
+.delete{
+	background-color: #f23f13;
+	width: 10%;
+	border: 2px;
+
+	
+	
+}
+.resetpwd{
+	background-color: #e8970b;
+	border: 2px;
+	width : 10%;
+	
+}
+.input-standard{
+	padding: 14px 20px;
+	margin: 8px;
+	width : 8%;
+}
+.product-name{
+	padding: 14px 20px;
+	margin: 8px;
+	width : 20%;
+}
+.form-label{
+	padding: 14px 20px;
+	margin: 30px ;
+	font-size:14px;
+    font-family:"Lucida Console";
+}
+input[type="text"] {
+    font-size:14px;
+    font-weight: bold;
+    font-family:"Lucida Console";
+}
+p {
+	font-size:20px;
+    font-weight: bold;
+    font-family:"Lucida Console";
+    background-color: #e8970b;
+    width : 125px;
+}
+.float-bot{
+	cursor: pointer;
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+	background-color:#F00;
+	color:#FFF;
+  	right:40px;
+  	line-height: 50px;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+}
+.float-top{
+	cursor: pointer;
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:120px;
+  	right:40px;
+  	line-height: 50px;
+	background-color:#0F0;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+}
+.float-top:hover{
+	background-color: #3e8e41
+}
+.float-top:active{
+	background-color: #3e8e41;
+  	box-shadow: 0 5px #666;
+  	transform: translateY(4px);
+}
+.float-bot:hover{
+	background-color: #3e8e41
+}
+.float-bot:active{
+	background-color: #3e8e41;
+  	box-shadow: 0 5px #666;
+  	transform: translateY(4px);
+}
+

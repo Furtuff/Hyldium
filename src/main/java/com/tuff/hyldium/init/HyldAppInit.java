@@ -1,11 +1,13 @@
 package com.tuff.hyldium.init;
 
-import com.objectdb.Enhancer;
-import com.tuff.hyldium.dao.Dao;
-import com.tuff.hyldium.entity.Item;
-import com.tuff.hyldium.lucene.Search;
-import com.tuff.hyldium.model.UserModel;
-import com.tuff.hyldium.security.AuthFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+import javax.ws.rs.ApplicationPath;
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -14,12 +16,13 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 
-import javax.inject.Singleton;
-import javax.ws.rs.ApplicationPath;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import com.objectdb.Enhancer;
+import com.tuff.hyldium.dao.Dao;
+import com.tuff.hyldium.entity.Item;
+import com.tuff.hyldium.lucene.Search;
+import com.tuff.hyldium.model.ItemModel;
+import com.tuff.hyldium.model.UserModel;
+import com.tuff.hyldium.security.AuthFilter;
 
 @ApplicationPath("hoho")
 @Singleton
@@ -70,7 +73,7 @@ public class HyldAppInit extends ResourceConfig implements PreDestroy {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		List<Item> list = Dao.getItemsList(offset);
+		List<ItemModel> list = Dao.getItemsList(offset);
 		while (!list.isEmpty()) {
 			for (int i = 0; i < list.size(); i++) {
 				try {
