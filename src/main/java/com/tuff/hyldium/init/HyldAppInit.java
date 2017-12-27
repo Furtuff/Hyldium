@@ -1,13 +1,11 @@
 package com.tuff.hyldium.init;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-
-import javax.ws.rs.ApplicationPath;
-import javax.xml.bind.DatatypeConverter;
-
+import com.objectdb.Enhancer;
+import com.tuff.hyldium.dao.Dao;
+import com.tuff.hyldium.entity.Item;
+import com.tuff.hyldium.lucene.Search;
+import com.tuff.hyldium.model.UserModel;
+import com.tuff.hyldium.security.AuthFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -16,12 +14,11 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 
-import com.objectdb.Enhancer;
-import com.tuff.hyldium.dao.Dao;
-import com.tuff.hyldium.entity.Item;
-import com.tuff.hyldium.lucene.Search;
-import com.tuff.hyldium.model.UserModel;
-import com.tuff.hyldium.security.AuthFilter;
+import javax.ws.rs.ApplicationPath;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 
 @ApplicationPath("hoho")
 public class HyldAppInit extends ResourceConfig implements PreDestroy {

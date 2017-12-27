@@ -18,7 +18,6 @@ $(document).ready(function(){
 		    sessionStorage.setItem('menu',this.id);
 		    var container = document.getElementById('frame-container');
 		    var subMenu = {};
-	
 		    subMenu['sub'] = this.id;
 		    httpPost(JSON.stringify(subMenu), container);
 	    }
