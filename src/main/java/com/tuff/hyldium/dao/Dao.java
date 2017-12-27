@@ -21,8 +21,8 @@ import java.util.List;
 
 public class Dao {
 	public static final String ADMIN = "admin";
-	public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 	private final static int MAX_NUMBER = 20;
+    public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("HyldiumPU");
 
 	private static EntityManager getEntityManager() {
 		return emf.createEntityManager();
@@ -76,9 +76,9 @@ public class Dao {
 				lineString = "0" + lineString;
 			}
 			System.out.println(line);
-			item.reference = (String) sheet.getCellAt("A" + lineString).getTextValue();
-			item.name = (String) sheet.getCellAt("B" + lineString).getTextValue();
-			try {
+            item.reference = sheet.getCellAt("A" + lineString).getTextValue();
+            item.name = sheet.getCellAt("B" + lineString).getTextValue();
+            try {
 				item.price = Double.parseDouble(sheet.getCellAt("J" + lineString).getTextValue().replace(",", "."));
 				item.priceHT = Double.parseDouble(sheet.getCellAt("G" + lineString).getTextValue().replace(",", "."));
 				item.byBundle = ((BigDecimal) sheet.getCellAt("E" + lineString).getValue()).floatValue();
