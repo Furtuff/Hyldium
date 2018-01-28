@@ -10,11 +10,11 @@
 <title>produits</title>
 </head>
 <body>
-<div id ="js" data-js="js/products" ></div>	
-<button id="add" class="addbtn">Ajouter</button>
+<div id ="js" data-js="js/products" ></div>
+<button id="add-product" class="addbtn">Ajouter</button>
 <div>
-  <a id="save" class="float-top">Sauver</a>
-	<a id="cancel" class="float-bot" >Annuler</a>
+    <a id="save-product" class="float-top">Sauver</a>
+    <a id="cancel-product" class="float-bot">Annuler</a>
  </div>
  <form id ="add-item-form" style="display: none" autocomplete="off">
 	<input name ="reference" value="" type="text" placeholder="Reference" class="input-standard" required>
@@ -27,16 +27,16 @@
 	<br>
 	<button type= "submit">Sauvegarder</button>
 </form>
-<form class="search-product" autocomplete="off" method="search">
+<form id="search" class="search-product" autocomplete="off">
 		<p type="button" class="search" >rechercher</p>
 		<br>
 		<input name ="reference" placeholder="ref" type="text" class="input-standard"required>
 		<input name = "name"  placeholder="Nom"type="text" class="product-name"required>
 		<input name = "label"  placeholder="Label"type="text" class="input-standard" required>
-		<input type ="text" placeholder="TVA" name ="TVA" class="input-standard" required>
-		<input type ="text"  placeholder="par Lot"name= "byBundle"  class="input-standard" required>
-		<input type ="text" placeholder="HT" name= "priceHT" class="input-standard"required>
-		<input type ="text" placeholder="TTC" name= "price" class="input-standard" required>	
+    <input step="0.01" min=0 type="number" placeholder="TVA" name="TVA" class="input-standard" required>
+    <input step="0.01" min=0 type="number" placeholder="par Lot" name="byBundle" class="input-standard" required>
+    <input step="0.01" min=0 type="number" placeholder="HT" name="priceHT" class="input-standard" required>
+    <input step="0.01" min=0 type="number" placeholder="TTC" name="price" class="input-standard" required>
 		<p> &nbsp;</p>
 </form>
 

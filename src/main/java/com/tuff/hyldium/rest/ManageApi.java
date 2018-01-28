@@ -1,27 +1,21 @@
 package com.tuff.hyldium.rest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.glassfish.jersey.server.mvc.Viewable;
-
 import com.tuff.hyldium.dao.Dao;
+import com.tuff.hyldium.lucene.Search;
 import com.tuff.hyldium.model.ItemModel;
 import com.tuff.hyldium.model.SubModel;
 import com.tuff.hyldium.model.UserModel;
 import com.tuff.hyldium.utils.Constant;
+import org.glassfish.jersey.server.mvc.Viewable;
+
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Produces(MediaType.TEXT_HTML)
 @Path("")
@@ -113,7 +107,32 @@ public class ManageApi extends Api {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response productAction(List<ItemModel> items, @PathParam("action") String action) {
 		Response response = Response.noContent().build();
-		//response = Response.ok(new Viewable("products.jsp",Dao.getItemsList(0))).build();
+        if (action.equals("update")) {
+            for (ItemModel i : items) {
+                Dao.crudItem(i);
+
+            }
+            response = Response.ok(new Viewable("/products.jsp", Dao.getItemsList(0))).build();
+        } else if (action.equals("search")) {
+            if (!items.get(0).reference.isEmpty()) {
+                response = Response.ok(new Viewable("/products.jsp", Dao.getItemsList(items.get(0).reference))).build();
+            } else {
+                List<ItemModel> list = null;
+                Search s = new Search();
+                String caca = items.get(0).toString();
+                if (caca.endsWith(" ")) {
+                    caca = caca.substring(0, caca.length() - 1);
+                }
+                try {
+                    list = s.search(caca);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                response = Response.ok(new Viewable("/products.jsp", list)).build();
+
+            }
+        }
+        //response = Response.ok(new Viewable("products.jsp",Dao.getItemsList(0))).build();
 
 		return response;
 

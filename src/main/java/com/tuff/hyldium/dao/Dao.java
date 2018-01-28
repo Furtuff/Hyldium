@@ -135,6 +135,18 @@ public class Dao {
 		return result;
 	}
 
+	public static List<ItemModel> getItemsList(String ref) {
+		EntityManager em = getEntityManager();
+		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.reference >=:ref ORDER BY d.reference", Item.class);
+		query.setMaxResults(MAX_NUMBER);
+		query.setParameter("ref", ref);
+		List<ItemModel> result = new ArrayList<>();
+		for (Item i : query.getResultList()) {
+			result.add(new ItemModel(i));
+		}
+		return result;
+	}
+
 	public static Item getItem(long id) {
 		EntityManager em = getEntityManager();
 		TypedQuery<Item> query = em.createQuery("SELECT d FROM Item d WHERE d.id=:id", Item.class);
@@ -176,6 +188,7 @@ public class Dao {
 				existingItem.copyFrom(itemModel);
 				em.persist(existingItem);
 				Search.addDoc(existingItem.name, existingItem.reference, String.valueOf(existingItem.id));
+				em.getTransaction().commit();
 			}
 			return existingItem.id;
 		}

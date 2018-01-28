@@ -1,15 +1,24 @@
 $(document).ready(function(){
-	
-	$("#item-form").submit(function(e){
-	    e.preventDefault();
-	  });
+
 	$
-	$("#add").click(function(){
+    $("#add-product").click(function () {
 		$("#add-item-form").show();
 	});
-	$("#add-product-form").submit(function(e){
+    $('form.search-product :input').change(function () {
+        var elements = document.getElementById("search").elements;
+
+        var obj = {};
+        for (var i = 0; i < elements.length; i++) {
+            var item = elements.item(i);
+            obj[item.name] = item.value;
+        }
+        var objs = [obj];
+        var jsonParam = JSON.stringify(objs);
+        httpPostProduct(jsonParam, "search");
+    });
+    $("#add-item-form").submit(function (e) {
 		e.preventDefault();
-		var elements = document.getElementById("add-form").elements;
+        var elements = document.getElementById("add-item-form").elements;
 	    var obj ={};
 	    for(var i = 0 ; i < elements.length ; i++){
 	        var item = elements.item(i);
@@ -18,11 +27,10 @@ $(document).ready(function(){
 	    
 	    var objs = [obj];
 	    var jsonParam = JSON.stringify(objs);
-	    
-	    httpPostUser(jsonParam, "add");
+        httpPostProduct(jsonParam, "update");
 	    return false;
-		$('#add-form').trigger("reset");
-		$("#add-form").hide();
+        $('#add-item-form').trigger("reset");
+        $("#add-item-form").hide();
 		
 
 	});
@@ -38,13 +46,13 @@ $(document).ready(function(){
 			var obj = {};
 			obj['id'] = this.dataset.id;
 			var objs = [obj];
-			httpPostUser(JSON.stringify(objs),'update');
+            httpPostProduct(JSON.stringify(objs), 'update');
 		}
 	})
-	$("#cancel").click(function(){
+    $("#cancel-product").click(function () {
 		location.reload();
 	});
-	$("#save").click(function() {
+    $("#save-product").click(function () {
 		var text ="";
 		var list = [];
 		var count = 0; 
@@ -68,15 +76,15 @@ $(document).ready(function(){
 
 			
 		});
-		
-		httpPostUser(JSON.stringify(list),'update');
+
+        httpPostProduct(JSON.stringify(list), 'update');
 		
 	});
 	
 	
 	
 });
-function httpPostUser(jsonParam, action)
+function httpPostProduct(jsonParam, action)
 {
 	var element = document.getElementById('frame-container');
 	var auth =JSON.parse(sessionStorage.getItem('token'));
@@ -88,7 +96,7 @@ function httpPostUser(jsonParam, action)
        element.innerHTML = xmlHttp.responseText;
        $(document).ready(function() {
     	var elem = document.getElementById('js');
-    	$.getScript( window.location.href.replace('logged','js/users')).done(function( script, textStatus ) {
+           $.getScript(window.location.href.replace('logged', 'js/products')).done(function (script, textStatus) {
   		  $('head').append(script);
   		  console.log( textStatus );
   		});    	
